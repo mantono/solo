@@ -1,6 +1,7 @@
 package com.mantono.solo
 
 import com.mantono.solo.api.Id128
+import com.mantono.solo.generator.IdGen
 import com.mantono.solo.generator.IdGen128
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -25,7 +26,7 @@ class IdGen128BitsTest
 
 	private suspend fun genIds(count: Int): List<Id128>
 	{
-		val gen = IdGen128(100)
+		val gen = IdGen<Id128>(100)
 		println(gen.nodeId)
 		return (0 until count).map { gen.generate(1000) }
 				.toList()

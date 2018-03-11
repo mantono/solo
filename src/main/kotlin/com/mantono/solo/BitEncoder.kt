@@ -1,6 +1,8 @@
 package com.mantono.solo
 
 import com.mantono.solo.bits.bitsOf
+import com.mantono.solo.id.Id128Bits
+import com.mantono.solo.id.Id64Bits
 import java.util.*
 
 data class BitEncoder(val nodeIdLength: Int, val timestampLength: Int, val sequenceLength: Int)
@@ -38,4 +40,7 @@ data class BitEncoder(val nodeIdLength: Int, val timestampLength: Int, val seque
 		val allAppended = ntAppended.append(s)
 		return allAppended.toByteArray()
 	}
+
+	fun generate128BitsId(nodeId: ByteArray, timestamp: Long, sequence: Long): Id128Bits = Id128Bits(generate(nodeId, timestamp, sequence))
+	fun generate64BitsId(nodeId: ByteArray, timestamp: Long, sequence: Long): Id64Bits = Id64Bits(generate(nodeId, timestamp, sequence))
 }
