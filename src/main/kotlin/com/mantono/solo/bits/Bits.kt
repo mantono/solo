@@ -37,6 +37,12 @@ data class Bits(private val bits: BooleanArray = BooleanArray(0)): Iterable<Bool
 		return Bits(newArray)
 	}
 
+	fun append(otherBits: Bits): Bits = sequenceOf(this.bits, otherBits.bits)
+			.flatMap { it.asSequence() }
+			.toList()
+			.toBooleanArray()
+			.let { Bits(it) }
+
 	fun reduceToMostSignificantSetBit(): Bits
 	{
 		val i: Int = bits.indexOf(true)
@@ -109,7 +115,7 @@ data class Bits(private val bits: BooleanArray = BooleanArray(0)): Iterable<Bool
 		} as T
 	}
 
-	fun limitToSize(size: Int): Bits
+	fun truncate(size: Int): Bits
 	{
 		if(size >= this.size) return this
 		val startIndex = this.size - size

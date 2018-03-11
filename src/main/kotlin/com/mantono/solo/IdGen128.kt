@@ -2,6 +2,8 @@ package com.mantono.solo
 
 import com.mantono.solo.api.Id128
 import com.mantono.solo.api.IdGenerator128
+import com.mantono.solo.bits.Bits
+import com.mantono.solo.bits.bitsOf
 import kotlinx.coroutines.experimental.TimeoutCancellationException
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
@@ -54,7 +56,6 @@ internal tailrec suspend fun idGenerator(
 		val idBytes: ByteArray = encoder.generate(nodeId, now, sequence)
 		channel.send(Id128Bits(idBytes))
 	}
-	System.out.println("adas")
 
 	when
 	{
@@ -91,10 +92,15 @@ data class BitEncoder(val nodeIdLength: Int, val timestampLength: Int, val seque
 
 	fun generate(nodeId: ByteArray, timestamp: Long, sequence: Long): ByteArray
 	{
-		val nodeBits = BitSet.valueOf(nodeId)
-		val timestampBits = BitSet.valueOf(LongArray(1) { timestamp })
-		val sequenceBits = BitSet.valueOf(LongArray(1) { sequence })
-		return trim(nodeBits, timestampBits, sequenceBits)
+		val n = bitsOf(nodeId)
+		val t = bitsOf(timestamp)
+		val s = bitsOf(sequence)
+		n.truncate(nodeIdLength)
+		t.truncate(timestampLength)
+		s.truncate(sequenceLength)
+		val ntAppended = n.append(t)
+		val allAppended = ntAppended.append(s)
+		return allAppended.toByteArray()
 	}
 
 	private fun trim(nodeBits: BitSet, timestampBits: BitSet, sequenceBits: BitSet): ByteArray
