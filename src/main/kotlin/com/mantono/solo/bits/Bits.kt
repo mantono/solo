@@ -71,49 +71,19 @@ data class Bits(private val bits: BooleanArray = BooleanArray(0)): Iterable<Bool
 
 	fun toByteArray(): ByteArray = bitsToBytes(bits).toByteArray()
 
-	override fun toByte(): Byte = asNumber()
+	override fun toByte(): Byte = toByteArray().asNumber()
 	override fun toChar(): kotlin.Char = toByte().toChar()
 	override fun toDouble(): Double = Double.fromBits(toLong())
 	override fun toFloat(): Float = Float.fromBits(toInt())
-	override fun toInt(): Int = asNumber()
-	override fun toShort(): Short = asNumber()
-
-	override fun toLong(): Long
-	{
-		val buffer: ByteBuffer = ByteBuffer.allocate(8)
-		buffer.put(toByteArray())
-		buffer.flip()
-		return buffer.long
-	}
-
-	inline fun <reified T: kotlin.Number> asNumber(): T
-	{
-		val readSize: Int = when(T::class)
-		{
-			Long::class, Double::class -> 8
-			Int::class, Float::class -> 4
-			Short::class -> 2
-			Char::class, Byte::class -> 1
-			else -> 0
-		}
-
-		val buffer = ByteBuffer.allocate(8)
-		buffer.put(toByteArray())
-		buffer.flip()
-
-		val readFromIndex: Int = 8 - readSize
-		return when(T::class)
-		{
-			Long::class -> buffer.getLong(readFromIndex)
-			Double::class -> buffer.getDouble(readFromIndex)
-			Int::class -> buffer.getInt(readFromIndex)
-			Float::class -> buffer.getFloat(readFromIndex)
-			Short::class -> buffer.getShort(readFromIndex)
-			Char::class -> buffer.getChar(readFromIndex)
-			Byte::class -> buffer.get(readFromIndex)
-			else -> IllegalArgumentException("Unexpected type: ${T::class.qualifiedName}")
-		} as T
-	}
+	override fun toInt(): Int = toByteArray().asNumber()
+	override fun toShort(): Short = toByteArray().asNumber()
+	override fun toLong(): Long = toByteArray().asNumber()
+//	{
+//		val buffer: ByteBuffer = ByteBuffer.allocate(8)
+//		buffer.put(toByteArray())
+//		buffer.flip()
+//		return buffer.long
+//	}
 
 	fun truncate(size: Int): Bits
 	{
@@ -184,6 +154,35 @@ fun Long.toByteArray(): ByteArray
 	val buffer: ByteBuffer = ByteBuffer.allocate(8)
 	buffer.putLong(this)
 	return buffer.array()
+}
+
+inline fun <reified T: kotlin.Number> ByteArray.asNumber(): T
+{
+	val readSize: Int = when(T::class)
+	{
+		Long::class, Double::class -> 8
+		Int::class, Float::class -> 4
+		Short::class -> 2
+		Char::class, Byte::class -> 1
+		else -> 0
+	}
+
+	val buffer = ByteBuffer.allocate(8)
+	buffer.put(this)
+	buffer.flip()
+
+	val readFromIndex: Int = 8 - readSize
+	return when(T::class)
+	{
+		Long::class -> buffer.getLong(readFromIndex)
+		Double::class -> buffer.getDouble(readFromIndex)
+		Int::class -> buffer.getInt(readFromIndex)
+		Float::class -> buffer.getFloat(readFromIndex)
+		Short::class -> buffer.getShort(readFromIndex)
+		Char::class -> buffer.getChar(readFromIndex)
+		Byte::class -> buffer.get(readFromIndex)
+		else -> IllegalArgumentException("Unexpected type: ${T::class.qualifiedName}")
+	} as T
 }
 
 fun bitsOf(bytes: ByteArray): Bits = bytes

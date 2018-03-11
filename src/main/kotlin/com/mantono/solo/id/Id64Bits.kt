@@ -1,21 +1,20 @@
 package com.mantono.solo.id
 
 import com.mantono.solo.api.Id64
+import com.mantono.solo.bits.asNumber
+import toBase64
 
-class Id64Bits(private val byteArray: ByteArray): Id64
+class Id64Bits(private val bytes: ByteArray): Id64
 {
-	override fun asBytes(): ByteArray
-	{
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
+	override fun asBytes(): ByteArray = bytes.copyOf()
+	override fun asString(): String = bytes.toBase64()
+	override fun asLong(): Long = bytes.asNumber()
 
-	override fun asString(): String
+	override fun equals(other: Any?): Boolean
 	{
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
+		if(this === other) return true
+		if(other !is Id64) return false
 
-	override fun asLong(): Long
-	{
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		return this.bytes.contentEquals(other.asBytes())
 	}
 }
