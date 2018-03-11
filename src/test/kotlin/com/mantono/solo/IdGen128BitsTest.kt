@@ -1,6 +1,7 @@
 package com.mantono.solo
 
 import com.mantono.solo.api.Id128
+import com.mantono.solo.generator.IdGen128
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
