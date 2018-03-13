@@ -1,5 +1,6 @@
 package com.mantono.solo
 
+import com.mantono.solo.api.Encoder
 import com.mantono.solo.api.Id
 import com.mantono.solo.api.Id128
 import com.mantono.solo.api.Id64
@@ -8,8 +9,8 @@ import com.mantono.solo.id.Id128Bits
 import com.mantono.solo.id.Id64Bits
 import java.util.*
 
-abstract class BitEncoder<out T: Id>(val nodeIdLength: Int, val timestampLength: Int, val sequenceLength: Int)
-	{
+data class BitEncoder(val nodeIdLength: Int, val timestampLength: Int, val sequenceLength: Int)
+{
 		val totalBits: Int = nodeIdLength + timestampLength + sequenceLength
 		val totalBytes: Int = totalBits / 8
 
@@ -43,26 +44,26 @@ abstract class BitEncoder<out T: Id>(val nodeIdLength: Int, val timestampLength:
 			val allAppended = ntAppended.append(s)
 			return allAppended.toByteArray()
 		}
-
-		abstract fun generate(nodeId: ByteArray, timestamp: Long, sequence: Long): T
 }
 
-class Bit128Encoder(nodeIdLength: Int, timestampLength: Int, sequenceLength: Int):
-		BitEncoder<Id128>(nodeIdLength, timestampLength, sequenceLength)
+object Default64BitEncoder: Encoder<Id64>
 {
+	private val enc = BitEncoder(2, 2, 2)
 
-	override fun generate(nodeId: ByteArray, timestamp: Long, sequence: Long): Id128
+	override fun invoke(p1: ByteArray, p2: Long, p3: Long): Id64
 	{
-		return Id128Bits(generateByteArray(nodeId, timestamp, sequence))
+		return Id64Bits(enc.generateByteArray(p1, p2, p3))
 	}
+
 }
 
-class Bit64Encoder(nodeIdLength: Int, timestampLength: Int, sequenceLength: Int):
-		BitEncoder<Id64>(nodeIdLength, timestampLength, sequenceLength)
+object Default128BitEncoder: Encoder<Id128>
 {
+	private val enc = BitEncoder(64, 48, 16)
 
-	override fun generate(nodeId: ByteArray, timestamp: Long, sequence: Long): Id64
+	override fun invoke(p1: ByteArray, p2: Long, p3: Long): Id128
 	{
-		return Id64Bits(generateByteArray(nodeId, timestamp, sequence))
+		return Id128Bits(enc.generateByteArray(p1, p2, p3))
 	}
+
 }
