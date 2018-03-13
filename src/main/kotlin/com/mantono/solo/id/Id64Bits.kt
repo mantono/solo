@@ -3,6 +3,7 @@ package com.mantono.solo.id
 import com.mantono.solo.api.Id64
 import com.mantono.solo.bits.asNumber
 import toBase64
+import java.util.*
 
 class Id64Bits(private val bytes: ByteArray): Id64
 {
@@ -17,4 +18,6 @@ class Id64Bits(private val bytes: ByteArray): Id64
 
 		return this.bytes.contentEquals(other.asBytes())
 	}
+
+	override fun hashCode(): Int = Arrays.hashCode(bytes)
 }

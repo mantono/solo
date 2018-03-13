@@ -135,7 +135,7 @@ class BitsTest
 			.joinToString(separator = " ") { (index: Int, byte: Byte) ->
 				when{
 					index % 7 == 0 -> "$byte\n"
-					index % 4 == 0 -> "_${byte}"
+					index % 4 == 0 -> "_$byte"
 					else -> byte.toString()
 				}
 			}

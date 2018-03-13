@@ -1,11 +1,7 @@
 package com.mantono.solo.generator
 
-import com.mantono.solo.BitEncoder
 import com.mantono.solo.api.Id
-import com.mantono.solo.id.Id128Bits
-import com.mantono.solo.id.Id64Bits
 import kotlinx.coroutines.experimental.channels.SendChannel
-import java.time.Instant
 
 
 typealias Encoder<T> = (ByteArray, Long, Long) -> T
@@ -13,9 +9,9 @@ typealias Encoder<T> = (ByteArray, Long, Long) -> T
 internal tailrec suspend fun <T: Id> idGenerator(
 		nodeId: ByteArray,
 		channel: SendChannel<T>,
-		encoder: Encoder<T>,
-		timestampProvider: TimestampProvider = InstantEpochMs,
-		sequence: SequenceCounter
+		encoder: (ByteArray, Long, Long) -> T,
+		sequence: SequenceCounter,
+		timestampProvider: TimestampProvider = InstantEpochMs
 )
 {
 	sequence.next(timestampProvider)?.let { (timestamp, seq) ->
@@ -23,5 +19,5 @@ internal tailrec suspend fun <T: Id> idGenerator(
 		channel.send(id)
 	}
 
-	idGenerator(nodeId, channel, encoder, timestampProvider, sequence)
+	idGenerator(nodeId, channel, encoder, sequence, timestampProvider)
 }

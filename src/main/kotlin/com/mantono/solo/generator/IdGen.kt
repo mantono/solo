@@ -1,5 +1,6 @@
 package com.mantono.solo.generator
 
+import com.mantono.solo.Bit64Encoder
 import com.mantono.solo.BitEncoder
 import com.mantono.solo.api.Id
 import com.mantono.solo.api.IdGenerator
@@ -11,7 +12,7 @@ import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import java.util.concurrent.TimeUnit
 
-val encoder = BitEncoder(64, 48, 16)
+val encoder = Bit64Encoder(64, 48, 16)
 
 class IdGen<out T: Id>(buffer: Int = 1000, parallelism: Int = 1): IdGenerator<T>
 {
@@ -21,7 +22,7 @@ class IdGen<out T: Id>(buffer: Int = 1000, parallelism: Int = 1): IdGenerator<T>
 
 	init
 	{
-		launch { idGenerator(nodeId, idChannel, encoder::generate128BitsId, InstantEpochMs, Counter(1000)) }
+		launch { idGenerator(nodeId, idChannel, encoder::generate, Counter(1000), InstantEpochMs) }
 	}
 
 	override suspend fun generate(maxWaitTime: Long): T
