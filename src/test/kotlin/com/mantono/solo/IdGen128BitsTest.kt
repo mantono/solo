@@ -26,8 +26,7 @@ class IdGen128BitsTest
 
 	private suspend fun genIds(count: Int): List<Id128>
 	{
-		val encoder = Bit128Encoder(64, 48, 16)
-		val gen = IdGen<Id128>(100, encoder = Default64BitEncoder)
+		val gen = IdGen<Id128>(100, Default128BitEncoder)
 		println(gen.nodeId)
 		return (0 until count).map { gen.generate(1000) }
 				.toList()
