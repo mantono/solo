@@ -1,8 +1,6 @@
 package com.mantono.solo
 
 import com.mantono.solo.api.Encoder
-import com.mantono.solo.api.Id128
-import com.mantono.solo.api.Id64
 import com.mantono.solo.bits.bitsOf
 import com.mantono.solo.id.Id128Bits
 import com.mantono.solo.id.Id64Bits
@@ -45,22 +43,22 @@ data class BitEncoder(val nodeIdLength: Int, val timestampLength: Int, val seque
 		}
 }
 
-object Default64BitEncoder: Encoder<Id64>
+object Default64BitEncoder: Encoder<Id64Bits>
 {
 	private val enc = BitEncoder(42, 12, 10)
 
-	override fun invoke(p1: ByteArray, p2: Long, p3: Long): Id64
+	override fun invoke(p1: ByteArray, p2: Long, p3: Long): Id64Bits
 	{
 		return Id64Bits(enc.generateByteArray(p1, p2, p3))
 	}
 
 }
 
-object Default128BitEncoder: Encoder<Id128>
+object Default128BitEncoder: Encoder<Id128Bits>
 {
 	private val enc = BitEncoder(48, 64, 16)
 
-	override fun invoke(p1: ByteArray, p2: Long, p3: Long): Id128
+	override fun invoke(p1: ByteArray, p2: Long, p3: Long): Id128Bits
 	{
 		return Id128Bits(enc.generateByteArray(p1, p2, p3))
 	}

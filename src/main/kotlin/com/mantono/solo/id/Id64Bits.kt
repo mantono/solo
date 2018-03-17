@@ -1,20 +1,20 @@
 package com.mantono.solo.id
 
-import com.mantono.solo.api.Id64
+import com.mantono.solo.api.Identifier
 import com.mantono.solo.bits.asNumber
 import toBase64
 import java.util.*
 
-class Id64Bits(private val bytes: ByteArray): Id64
+class Id64Bits(private val bytes: ByteArray): Identifier
 {
 	override fun asBytes(): ByteArray = bytes.copyOf()
 	override fun asString(): String = bytes.toBase64()
-	override fun asLong(): Long = bytes.asNumber()
+	fun asLong(): Long = bytes.asNumber()
 
 	override fun equals(other: Any?): Boolean
 	{
 		if(this === other) return true
-		if(other !is Id64) return false
+		if(other !is Identifier) return false
 
 		return this.bytes.contentEquals(other.asBytes())
 	}

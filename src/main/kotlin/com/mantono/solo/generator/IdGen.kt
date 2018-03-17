@@ -1,7 +1,9 @@
 package com.mantono.solo.generator
 
+import com.mantono.solo.Counter
+import com.mantono.solo.MillisecondsSinceUnixEpoch
 import com.mantono.solo.api.Encoder
-import com.mantono.solo.api.Id
+import com.mantono.solo.api.Identifier
 import com.mantono.solo.api.IdGenerator
 import com.mantono.solo.getMacAddress
 import kotlinx.coroutines.experimental.TimeoutCancellationException
@@ -11,7 +13,7 @@ import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import java.util.concurrent.TimeUnit
 
-class IdGen<out T: Id>(buffer: Int = 1000, encoder: Encoder<T>): IdGenerator<T>
+class IdGen<out T: Identifier>(buffer: Int = 1000, encoder: Encoder<T>): IdGenerator<T>
 {
 	override val nodeId: ByteArray = getMacAddress()
 
@@ -21,7 +23,7 @@ class IdGen<out T: Id>(buffer: Int = 1000, encoder: Encoder<T>): IdGenerator<T>
 	{
 		val id1: T = encoder(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0), 0, Long.MAX_VALUE)
 		val id2: T = encoder(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0), 0, Long.MIN_VALUE)
-		launch { idGenerator(nodeId, idChannel, encoder, Counter(1000), InstantEpochMs) }
+		launch { idGenerator(nodeId, idChannel, encoder, Counter(1000), MillisecondsSinceUnixEpoch) }
 	}
 
 	override suspend fun generate(maxWaitTime: Long): T

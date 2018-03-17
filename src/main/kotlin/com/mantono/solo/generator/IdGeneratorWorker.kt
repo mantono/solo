@@ -1,15 +1,17 @@
 package com.mantono.solo.generator
 
 import com.mantono.solo.api.Encoder
-import com.mantono.solo.api.Id
+import com.mantono.solo.api.Identifier
+import com.mantono.solo.api.SequenceCounter
+import com.mantono.solo.api.TimestampProvider
 import kotlinx.coroutines.experimental.channels.SendChannel
 
-internal tailrec suspend fun <T: Id> idGenerator(
+internal tailrec suspend fun <T: Identifier> idGenerator(
 		nodeId: ByteArray,
 		channel: SendChannel<T>,
 		encoder: Encoder<T>,
 		sequence: SequenceCounter,
-		timestampProvider: TimestampProvider = InstantEpochMs
+		timestampProvider: TimestampProvider
 )
 {
 	sequence.next(timestampProvider)?.let { (timestamp, seq) ->

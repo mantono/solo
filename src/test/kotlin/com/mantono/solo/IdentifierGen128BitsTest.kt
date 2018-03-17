@@ -1,22 +1,22 @@
 package com.mantono.solo
 
-import com.mantono.solo.api.Id128
+import com.mantono.solo.api.Identifier
 import com.mantono.solo.generator.IdGen
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.Instant
 
-class IdGen128BitsTest
+class IdentifierGen128BitsTest
 {
 	@Test
 	fun uniquenessTest()
 	{
-		val idsToGenerate = 1_000
+		val idsToGenerate = 100_000
 		val start: Long = Instant.now().toEpochMilli()
-		val idList: List<Id128> = runBlocking { genIds(idsToGenerate) }
+		val idList: List<Identifier> = runBlocking { genIds(idsToGenerate) }
 		val end: Long = Instant.now().toEpochMilli()
-		val idSet: Set<Id128> = idList.toSet()
+		val idSet: Set<Identifier> = idList.toSet()
 
 		assertEquals(idsToGenerate, idList.size)
 		assertEquals(idList.size, idSet.size)
@@ -24,9 +24,9 @@ class IdGen128BitsTest
 	}
 
 
-	private suspend fun genIds(count: Int): List<Id128>
+	private suspend fun genIds(count: Int): List<Identifier>
 	{
-		val gen = IdGen<Id128>(100, Default128BitEncoder)
+		val gen = IdGen<Identifier>(100, Default128BitEncoder)
 		println(gen.nodeId)
 		return (0 until count).map { gen.generate(1000) }
 				.toList()
