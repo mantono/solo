@@ -12,7 +12,7 @@ class IdentifierGen128BitsTest
 	@Test
 	fun uniquenessTest()
 	{
-		val idsToGenerate = 100_000
+		val idsToGenerate = 400_000
 		val start: Long = Instant.now().toEpochMilli()
 		val idList: List<Identifier> = runBlocking { genIds(idsToGenerate) }
 		val end: Long = Instant.now().toEpochMilli()
@@ -23,10 +23,9 @@ class IdentifierGen128BitsTest
 		println("Throughput: ${idsToGenerate/(end - start).toDouble()} ids/ms")
 	}
 
-
 	private suspend fun genIds(count: Int): List<Identifier>
 	{
-		val gen = IdGen<Identifier>(100, Default128BitEncoder)
+		val gen = IdGen<Identifier>(100, Default64BitEncoder)
 		println(gen.nodeId)
 		return (0 until count).map { gen.generate(1000) }
 				.toList()

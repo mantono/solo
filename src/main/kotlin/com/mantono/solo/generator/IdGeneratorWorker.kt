@@ -15,7 +15,7 @@ internal tailrec suspend fun <T: Identifier> idGenerator(
 )
 {
 	sequence.next(timestampProvider)?.let { (timestamp, seq) ->
-		val id: T = encoder(nodeId, timestamp, seq)
+		val id: T = encoder(timestamp, nodeId, seq)
 		channel.send(id)
 	}
 

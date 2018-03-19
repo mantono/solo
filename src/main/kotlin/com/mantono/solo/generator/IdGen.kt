@@ -21,8 +21,6 @@ class IdGen<out T: Identifier>(buffer: Int = 1000, encoder: Encoder<T>): IdGener
 
 	init
 	{
-		val id1: T = encoder(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0), 0, Long.MAX_VALUE)
-		val id2: T = encoder(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0), 0, Long.MIN_VALUE)
 		launch { idGenerator(nodeId, idChannel, encoder, Counter(1000), MillisecondsSinceUnixEpoch) }
 	}
 

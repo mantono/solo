@@ -5,6 +5,7 @@ import java.util.*
 import kotlin.experimental.and
 import kotlin.experimental.or
 
+@Deprecated("Use ByteBuffer instead")
 data class Bits(private val bits: BooleanArray = BooleanArray(0)): Iterable<Boolean> by bits.asIterable(), Number()
 {
 	constructor(bits: Int): this(BooleanArray(bits) { false })
