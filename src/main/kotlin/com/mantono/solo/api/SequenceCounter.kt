@@ -1,7 +1,5 @@
 package com.mantono.solo.api
 
-import java.time.Instant
-
 interface SequenceCounter
 {
 	/**

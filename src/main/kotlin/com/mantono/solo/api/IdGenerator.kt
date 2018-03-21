@@ -2,13 +2,6 @@ package com.mantono.solo.api
 
 interface IdGenerator<out T: Identifier>
 {
-	/**
-	 * An ID that uniquely identifies this generator. This can but must not
-	 * necessarily be unique for a physical node. The important thing is
-	 * that each generator has an unique id, regardless of from what it is
-	 * derived. This ID should remain constant and not change during runtime.
-	 */
-	val nodeId: ByteArray
 
 	/**
 	 * Generate an [Identifier] object, based on [nodeId], a timestamp
