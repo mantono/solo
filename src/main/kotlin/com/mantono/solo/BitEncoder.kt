@@ -51,23 +51,47 @@ data class BitEncoder(val timestampLength: Int, val nodeIdLength: Int, val seque
 
 	fun generateByteArray(timestamp: Long, nodeId: ByteArray, sequence: Long): ByteArray
 	{
+		// Maybe we can do something like
+		// timestamp.takeBits(22..63)
+
+
+
+		// 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 // 64
+
+
+		// 00000000 00000000 01100100 01000010 00011100 00100010 01000100 11101101 // 64
+		// 00 01000010 00011100 00100010 01000100 11101101 // << 22 (42 bits)
+		// 00010000 10000111 00001000 10010001 00111011 01000000 00000000 00000000 // << 22 (42 bits)
+		// 00010000 10000111 00001000 10010001 00111011 01000000 00000000 00000000 // timestampShifted
 		// 64 - 42 = 22
 		val timestampShifted = timestamp shl 22
 
+		// 00000000 00000010 01000100 01011010 00010100 11010010 01011100 11101100 // 64
+		// 011100 11101100 // << 52
+		// 01110011 10110000 00000000 00000000 00000000 00000000 00000000 00000000
+		// 01110011 10110000 00000000 00000000 00000000 00000000 00000000 00000000 // >> 42
+		// 00000000 00000000 00000000 00000000 00000000 00111001 11011000 0000000 // nodeIdShifted
 		// 64 - 12 = 52
-		val nodeIdShifted: Long = nodeId.toLong() shl 52 shr 22
-//		val nodeIdShiftedLeft: Long = nodeId.toLong() shl 52
-//		val nodeIdShiftedRight: Long = nodeIdShiftedLeft shr 22
+		val nodeIdShifted: Long = (nodeId.toLong() shl 52) ushr 42
 
+		// 00000000 00000000 00000000 00000000 00000000 00000000 00000000 11101101 // 64
+		// 00001110 11010000 00000000 00000000 00000000 00000000 00000000 00000000 // << 54
+		// 00000000 00000000 00000000 00000000 00000000 00000000 00000000 11101101 // >> 54
+		// 00000000 00000000 00000000 00000000 00000000 00000000 00000000 11101101 // sequenceShiftedLeft
 		// 64 - 10 = 54
-		val sequenceShiftedLeft: Long = sequence shl 54 shr 54
-		//val sequenceShiftedRight: Long = sequenceShiftedLeft shr 54
+		val sequenceShiftedLeft: Long = (sequence shl 54) ushr 54
 
-		return (timestampShifted or nodeIdShifted or sequenceShiftedLeft).toByteArray()
-//		val and1 = timestampShifted or nodeIdShiftedRight
-//		val and2 = and1 or sequenceShiftedRight
-//
-//		return and2.toByteArray()
+		// So we got
+		// 00010000 10000111 00001000 10010001 00111011 01000000 00000000 00000000 // timestampShifted
+		// 00000000 00000000 00000000 00000000 00000000 00111001 11011000 0000000 // nodeIdShifted
+		// 00000000 00000000 00000000 00000000 00000000 00000000 00000000 11101101 // sequenceShiftedLeft
+
+		val a: Long = timestampShifted xor nodeIdShifted
+		val b: Long = a xor sequenceShiftedLeft
+
+		return b.toByteArray()
+
+		//return (timestampShifted or nodeIdShifted or sequenceShiftedLeft).toByteArray()
 
 
 
