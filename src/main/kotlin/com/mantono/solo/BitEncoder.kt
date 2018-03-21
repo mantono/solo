@@ -22,13 +22,13 @@ data class BitEncoder(val timestampLength: Int, val nodeIdLength: Int, val seque
 	private val timestampMask: Long = createMask(timestampLength).toLong()
 	private val sequenceMask: Long = 1L shr timestampLength
 
-	private fun createMask(length: Int): BigInteger
-	{
-		return (1..length).asSequence()
-				.map { "1" }
-				.joinToString(prefix = "0b", separator = "") { it }
-				.let { BigInteger() }
-	}
+	private fun createMask(length: Int): BigInteger = BigInteger.ZERO
+//	{
+//		return (1..length).asSequence()
+//				.map { "1" }
+//				.joinToString(prefix = "0b", separator = "") { it }
+//				.let { BigInteger() }
+//	}
 
 
 	val maxSequenceValue: Int = run {
@@ -51,20 +51,40 @@ data class BitEncoder(val timestampLength: Int, val nodeIdLength: Int, val seque
 
 	fun generateByteArray(timestamp: Long, nodeId: ByteArray, sequence: Long): ByteArray
 	{
-		val nodeBits = nodeId.toBigInteger()
-		val shiftToTotalSize: Int = totalBits - nodeBits.bitCount()
-		val correctSize = nodeBits shl shiftToTotalSize
-		val shiftToRemoveData: Int = nodeBits.bitCount() - nodeIdLength
-		val finaShifted = correctSize shl shiftToRemoveData
+		// 64 - 42 = 22
+		val timestampShifted = timestamp shl 22
+
+		// 64 - 12 = 52
+		val nodeIdShifted: Long = nodeId.toLong() shl 52 shr 22
+//		val nodeIdShiftedLeft: Long = nodeId.toLong() shl 52
+//		val nodeIdShiftedRight: Long = nodeIdShiftedLeft shr 22
+
+		// 64 - 10 = 54
+		val sequenceShiftedLeft: Long = sequence shl 54 shr 54
+		//val sequenceShiftedRight: Long = sequenceShiftedLeft shr 54
+
+		return (timestampShifted or nodeIdShifted or sequenceShiftedLeft).toByteArray()
+//		val and1 = timestampShifted or nodeIdShiftedRight
+//		val and2 = and1 or sequenceShiftedRight
+//
+//		return and2.toByteArray()
 
 
-		val timestampBits = timestamp.toBitSet()
-		val timestampClear: Int = 64 - timestampLength
-		timestampBits.clear(0, timestampClear - 1)
 
-		val sequenceBits = sequence.toBitSet()
-		val sequenceClear: Int = 64 - sequenceLength
-		sequenceBits.clear(0, sequenceClear - 1)
+//		val nodeBits = nodeId.toBigInteger()
+//		val shiftToTotalSize: Int = totalBits - nodeBits.bitCount()
+//		val correctSize = nodeBits shl shiftToTotalSize
+//		val shiftToRemoveData: Int = nodeBits.bitCount() - nodeIdLength
+//		val finaShifted = correctSize shl shiftToRemoveData
+//
+//
+//		val timestampBits = timestamp.toBitSet()
+//		val timestampClear: Int = 64 - timestampLength
+//		timestampBits.clear(0, timestampClear - 1)
+//
+//		val sequenceBits = sequence.toBitSet()
+//		val sequenceClear: Int = 64 - sequenceLength
+//		sequenceBits.clear(0, sequenceClear - 1)
 
 
 //		val bigSequence = sequence.toBigInteger()
@@ -77,6 +97,7 @@ data class BitEncoder(val timestampLength: Int, val nodeIdLength: Int, val seque
 
 fun ByteArray.toBigInteger(): BigInteger = BigInteger(this)
 fun ByteArray.toBitSet(): BitSet = BitSet.valueOf(this)
+fun ByteArray.toLong(): Long = BigInteger(this).toLong()
 fun Long.toBigInteger(): BigInteger = BigInteger.valueOf(this)
 fun Long.toBitSet(): BitSet = BitSet.valueOf(this.toByteArray())
 

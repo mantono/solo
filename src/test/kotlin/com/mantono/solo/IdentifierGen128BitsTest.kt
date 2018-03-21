@@ -28,6 +28,7 @@ class IdentifierGen128BitsTest
 		val gen = IdGen<Identifier>(100, Default64BitEncoder)
 		println(gen.nodeId)
 		return (0 until count).map { gen.generate(1000) }
+				.onEach { println(it.asString()) }
 				.toList()
 	}
 }
