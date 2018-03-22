@@ -116,7 +116,11 @@ object Default64BitEncoder: Encoder<Id64Bits>
 {
 	private val enc = BitEncoder(42, 12, 10)
 
-	override fun invoke(timestamp: Long, nodeId: ByteArray, sequence: Long): Id64Bits
+	override val timestampBits: Int = 42
+	override val nodeIdBits: Int = 12
+	override val sequenceBits: Int = 10
+
+	override fun encode(timestamp: Long, nodeId: ByteArray, sequence: Long): Id64Bits
 	{
 		return Id64Bits(enc.generateByteArray(timestamp, nodeId, sequence))
 	}
@@ -125,9 +129,13 @@ object Default64BitEncoder: Encoder<Id64Bits>
 
 object Default128BitEncoder: Encoder<Id128Bits>
 {
-	private val enc = BitEncoder(48, 64, 16)
+	private val enc = BitEncoder(64, 48, 16)
 
-	override fun invoke(timestamp: Long, nodeId: ByteArray, sequence: Long): Id128Bits
+	override val timestampBits: Int = 64
+	override val nodeIdBits: Int = 48
+	override val sequenceBits: Int = 16
+
+	override fun encode(timestamp: Long, nodeId: ByteArray, sequence: Long): Id128Bits
 	{
 		return Id128Bits(enc.generateByteArray(timestamp, nodeId, sequence))
 	}

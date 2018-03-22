@@ -3,8 +3,18 @@ package com.mantono.solo
 import com.mantono.solo.api.SequenceCounter
 import com.mantono.solo.api.TimestampProvider
 
-class Counter(override val max: Long): SequenceCounter
+class Counter(sequenceBits: Int): SequenceCounter
 {
+	init
+	{
+		if(sequenceBits <= 0)
+			throw IllegalArgumentException("Minimum required bits are 1, but got $sequenceBits")
+	}
+
+	override val max: Long = (0L until sequenceBits.toLong()).asSequence()
+			.map { 1L shl it.toInt() }
+			.sum()
+
 	private var lastTimestamp: Long = Long.MIN_VALUE
 		set(value)
 		{

@@ -21,7 +21,7 @@ class IdGen<out T: Identifier>(
 		encoder: Encoder<T>,
 		timestamp: TimestampProvider = MillisecondsSinceUnixEpoch,
 		nodeId: NodeIdProvider = MacAddress,
-		counter: SequenceCounter = Counter(1000)
+		counter: SequenceCounter = Counter(encoder.sequenceBits)
 ): IdGenerator<T>
 {
 	private val idChannel: Channel<T> = Channel(buffer)
