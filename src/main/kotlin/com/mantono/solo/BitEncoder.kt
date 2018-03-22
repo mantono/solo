@@ -18,19 +18,6 @@ data class BitEncoder(val timestampLength: Int, val nodeIdLength: Int, val seque
 	val timestampRange: IntRange = 0 until timestampLength
 	val sequenceRange: IntRange = 0 until  sequenceLength
 
-	private val nodeMask: BigInteger = createMask(nodeIdLength)
-	private val timestampMask: Long = createMask(timestampLength).toLong()
-	private val sequenceMask: Long = 1L shr timestampLength
-
-	private fun createMask(length: Int): BigInteger = BigInteger.ZERO
-//	{
-//		return (1..length).asSequence()
-//				.map { "1" }
-//				.joinToString(prefix = "0b", separator = "") { it }
-//				.let { BigInteger() }
-//	}
-
-
 	val maxSequenceValue: Int = run {
 		val b = BitSet(sequenceLength)
 		b.set(1, sequenceLength - 1)
@@ -64,7 +51,7 @@ data class BitEncoder(val timestampLength: Int, val nodeIdLength: Int, val seque
 		// 00010000 10000111 00001000 10010001 00111011 01000000 00000000 00000000 // << 22 (42 bits)
 		// 00010000 10000111 00001000 10010001 00111011 01000000 00000000 00000000 // timestampShifted
 		// 64 - 42 = 22
-		val timestampShifted = timestamp shl 22
+		val timestampShifted = timestamp.toBigInteger() shl 22
 
 		// 00000000 00000010 01000100 01011010 00010100 11010010 01011100 11101100 // 64
 		// 011100 11101100 // << 52
@@ -72,22 +59,22 @@ data class BitEncoder(val timestampLength: Int, val nodeIdLength: Int, val seque
 		// 01110011 10110000 00000000 00000000 00000000 00000000 00000000 00000000 // >> 42
 		// 00000000 00000000 00000000 00000000 00000000 00111001 11011000 0000000 // nodeIdShifted
 		// 64 - 12 = 52
-		val nodeIdShifted: Long = (nodeId.toLong() shl 52) ushr 42
+		val nodeIdShifted: BigInteger = (BigInteger(nodeId).abs() shl 52) shr 42
 
 		// 00000000 00000000 00000000 00000000 00000000 00000000 00000000 11101101 // 64
 		// 00001110 11010000 00000000 00000000 00000000 00000000 00000000 00000000 // << 54
 		// 00000000 00000000 00000000 00000000 00000000 00000000 00000000 11101101 // >> 54
 		// 00000000 00000000 00000000 00000000 00000000 00000000 00000000 11101101 // sequenceShiftedLeft
 		// 64 - 10 = 54
-		val sequenceShiftedLeft: Long = (sequence shl 54) ushr 54
+		val sequenceShiftedLeft: BigInteger = (sequence.toBigInteger() shl 54) shr 54
 
 		// So we got
 		// 00010000 10000111 00001000 10010001 00111011 01000000 00000000 00000000 // timestampShifted
 		// 00000000 00000000 00000000 00000000 00000000 00111001 11011000 0000000 // nodeIdShifted
 		// 00000000 00000000 00000000 00000000 00000000 00000000 00000000 11101101 // sequenceShiftedLeft
 
-		val a: Long = timestampShifted xor nodeIdShifted
-		val b: Long = a xor sequenceShiftedLeft
+		val a: BigInteger = timestampShifted xor nodeIdShifted
+		val b: BigInteger = a xor sequenceShiftedLeft
 
 		return b.toByteArray()
 
