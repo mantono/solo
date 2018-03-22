@@ -2,9 +2,9 @@ package com.mantono.solo
 
 import com.mantono.solo.api.Identifier
 import com.mantono.solo.api.NodeIdProvider
-import com.mantono.solo.encoders.FlakeIdEncoder
-import com.mantono.solo.encoders.SnoFlakeIdEncoder
+import com.mantono.solo.encoders.SnowFlakeIdEncoder
 import com.mantono.solo.generator.IdGen
+import com.mantono.solo.id.SnowFlakeId
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
@@ -56,9 +56,9 @@ class IdentifierGenSnowFlakeIdTest
 		println("Throughput: ${idsToGenerate/(end - start).toDouble()} ids/ms")
 	}
 
-	private suspend fun genIds64(count: Int, nodeIdProvider: NodeIdProvider): List<Identifier>
+	private suspend fun genIds64(count: Int, nodeIdProvider: NodeIdProvider): List<SnowFlakeId>
 	{
-		val gen = IdGen<Identifier>(1000, SnoFlakeIdEncoder, nodeId = nodeIdProvider)
+		val gen = IdGen(1000, SnowFlakeIdEncoder, nodeId = nodeIdProvider)
 		return (0 until count).map { gen.generate(1000) }
 				.toList()
 	}
