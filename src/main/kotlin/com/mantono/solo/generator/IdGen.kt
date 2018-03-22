@@ -30,7 +30,7 @@ class IdGen<out T: Identifier>(
 		launch { idGenerator(nodeId.nodeId(), idChannel, encoder, counter, timestamp) }
 	}
 
-	override suspend fun generate(maxWaitTime: Long): T = idChannel.receive(maxWaitTime)
+	override suspend fun generate(maxWaitTime: Long, unit: TimeUnit): T = idChannel.receive(maxWaitTime, unit)
 }
 
 suspend fun <E> ReceiveChannel<E>.receive(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS): E

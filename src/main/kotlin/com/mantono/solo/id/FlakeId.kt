@@ -1,15 +1,13 @@
 package com.mantono.solo.id
 
 import com.mantono.solo.api.Identifier
-import com.mantono.solo.bits.asNumber
 import toBase64
 import java.util.*
 
-class Id64Bits(private val bytes: ByteArray): Identifier
+class FlakeId(private val bytes: ByteArray): Identifier
 {
 	override fun asBytes(): ByteArray = bytes.copyOf()
 	override fun asString(): String = bytes.toBase64()
-	fun asLong(): Long = bytes.asNumber()
 
 	override fun equals(other: Any?): Boolean
 	{
