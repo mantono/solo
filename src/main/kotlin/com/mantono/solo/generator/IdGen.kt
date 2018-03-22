@@ -4,16 +4,15 @@ import com.mantono.solo.Counter
 import com.mantono.solo.MacAddress
 import com.mantono.solo.MillisecondsSinceUnixEpoch
 import com.mantono.solo.api.Encoder
-import com.mantono.solo.api.Identifier
 import com.mantono.solo.api.IdGenerator
+import com.mantono.solo.api.Identifier
 import com.mantono.solo.api.NodeIdProvider
 import com.mantono.solo.api.SequenceCounter
 import com.mantono.solo.api.TimestampProvider
-import kotlinx.coroutines.experimental.TimeoutCancellationException
-import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withTimeout
 import java.util.concurrent.TimeUnit
 
 class IdGen<out T: Identifier>(
@@ -31,14 +30,11 @@ class IdGen<out T: Identifier>(
 		launch { idGenerator(nodeId.nodeId(), idChannel, encoder, counter, timestamp) }
 	}
 
-	override suspend fun generate(maxWaitTime: Long): T
-	{
-		val throwException = async {
-			delay(maxWaitTime, TimeUnit.MILLISECONDS)
-			throw TimeoutCancellationException("$maxWaitTime milliseconds passed without getting an ID")
-		}
-		val id: T = idChannel.receive()
-		throwException.cancel()
-		return id
-	}
+	override suspend fun generate(maxWaitTime: Long): T = idChannel.receive(maxWaitTime)
+}
+
+suspend fun <E> ReceiveChannel<E>.receive(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS): E
+{
+	val rc = this
+	return withTimeout(time, unit) { rc.receive() }
 }
