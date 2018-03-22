@@ -35,12 +35,13 @@ class IdentifierGen128BitsTest
 		)
 	}
 
+
 	@Test
-	fun uniquenessTestWithFakeMacAddress()
+	fun uniquenessTestCrazyLongOne()
 	{
-		val idsToGenerate = 100_000
+		val idsToGenerate = 5_000_000
 		val start: Long = Instant.now().toEpochMilli()
-		val idList: List<Identifier> = runBlocking { genIds(idsToGenerate, FakeMacAddress) }
+		val idList: List<Identifier> = runBlocking { genIds64(idsToGenerate, FakeMacAddress) }
 		val end: Long = Instant.now().toEpochMilli()
 		val idSet: Set<Identifier> = idList.toSet()
 
@@ -50,11 +51,11 @@ class IdentifierGen128BitsTest
 	}
 
 	@Test
-	fun uniquenessTestWithFakeInvertedMacAddress()
+	fun uniquenessTestWithFakeMacAddressAnd64BitEncoder()
 	{
 		val idsToGenerate = 100_000
 		val start: Long = Instant.now().toEpochMilli()
-		val idList: List<Identifier> = runBlocking { genIds(idsToGenerate, FakeMacAddressInverted) }
+		val idList: List<Identifier> = runBlocking { genIds64(idsToGenerate, FakeMacAddress) }
 		val end: Long = Instant.now().toEpochMilli()
 		val idSet: Set<Identifier> = idList.toSet()
 
@@ -63,9 +64,59 @@ class IdentifierGen128BitsTest
 		println("Throughput: ${idsToGenerate/(end - start).toDouble()} ids/ms")
 	}
 
-	private suspend fun genIds(count: Int, nodeIdProvider: NodeIdProvider): List<Identifier>
+	@Test
+	fun uniquenessTestWithFakeInvertedMacAddressAnd64BitEncoder()
+	{
+		val idsToGenerate = 100_000
+		val start: Long = Instant.now().toEpochMilli()
+		val idList: List<Identifier> = runBlocking { genIds64(idsToGenerate, FakeMacAddressInverted) }
+		val end: Long = Instant.now().toEpochMilli()
+		val idSet: Set<Identifier> = idList.toSet()
+
+		assertEquals(idsToGenerate, idList.size)
+		assertEquals(idList.size, idSet.size)
+		println("Throughput: ${idsToGenerate/(end - start).toDouble()} ids/ms")
+	}
+
+	private suspend fun genIds64(count: Int, nodeIdProvider: NodeIdProvider): List<Identifier>
 	{
 		val gen = IdGen<Identifier>(1000, Default64BitEncoder, nodeId = nodeIdProvider)
+		return (0 until count).map { gen.generate(1000) }
+				.onEach { println(it.asString()) }
+				.toList()
+	}
+
+	@Test
+	fun uniquenessTestWithFakeMacAddressAnd128BitEncoder()
+	{
+		val idsToGenerate = 100_000
+		val start: Long = Instant.now().toEpochMilli()
+		val idList: List<Identifier> = runBlocking { genIds128(idsToGenerate, FakeMacAddress) }
+		val end: Long = Instant.now().toEpochMilli()
+		val idSet: Set<Identifier> = idList.toSet()
+
+		assertEquals(idsToGenerate, idList.size)
+		assertEquals(idList.size, idSet.size)
+		println("Throughput: ${idsToGenerate/(end - start).toDouble()} ids/ms")
+	}
+
+	@Test
+	fun uniquenessTestWithFakeInvertedMacAddressAnd128BitEncoder()
+	{
+		val idsToGenerate = 100_000
+		val start: Long = Instant.now().toEpochMilli()
+		val idList: List<Identifier> = runBlocking { genIds128(idsToGenerate, FakeMacAddressInverted) }
+		val end: Long = Instant.now().toEpochMilli()
+		val idSet: Set<Identifier> = idList.toSet()
+
+		assertEquals(idsToGenerate, idList.size)
+		assertEquals(idList.size, idSet.size)
+		println("Throughput: ${idsToGenerate/(end - start).toDouble()} ids/ms")
+	}
+
+	private suspend fun genIds128(count: Int, nodeIdProvider: NodeIdProvider): List<Identifier>
+	{
+		val gen = IdGen<Identifier>(1000, Default128BitEncoder, nodeId = nodeIdProvider)
 		return (0 until count).map { gen.generate(1000) }
 				.onEach { println(it.asString()) }
 				.toList()
