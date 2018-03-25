@@ -58,10 +58,10 @@ class IdentifierGenFlakeIdTest
 		println("Throughput: ${idsToGenerate/(end - start).toDouble()} ids/ms")
 	}
 
-	private suspend fun genIds128(count: Int, nodeIdProvider: NodeIdProvider): List<Identifier>
+	private suspend fun genIds128(count: Int, nodeIdProvider: NodeIdProvider, buffer: Int = 1000, waitTimeMs: Long = 1000): List<Identifier>
 	{
-		val gen = IdGen<Identifier>(1000, FlakeIdEncoder, nodeId = nodeIdProvider)
-		return (0 until count).map { gen.generate(1000) }
+		val gen = IdGen<Identifier>(buffer, FlakeIdEncoder, nodeId = nodeIdProvider)
+		return (0 until count).map { gen.generate(waitTimeMs) }
 				.toList()
 	}
 

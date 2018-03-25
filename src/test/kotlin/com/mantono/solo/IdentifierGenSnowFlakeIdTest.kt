@@ -7,6 +7,7 @@ import com.mantono.solo.generator.IdGen
 import com.mantono.solo.id.SnowFlakeId
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.time.Instant
@@ -26,6 +27,32 @@ class IdentifierGenSnowFlakeIdTest
 		Assertions.assertEquals(idsToGenerate, idList.size)
 		Assertions.assertEquals(idList.size, idSet.size)
 		println("Throughput: ${idsToGenerate/(end - start).toDouble()} ids/ms")
+	}
+
+	@Test
+	fun testUniquenessOnIdsCreatedOnDifferentNodesAtTheSameTime()
+	{
+		val fakeNodes: List<NodeIdProvider> = createFakeNodes(8)
+		val generatedIds = fakeNodes.map {
+			runBlocking { genIds64(500_000, nodeIdProvider = it) }
+		}.flatten()
+
+		assertEquals(generatedIds.toSet().size, generatedIds.size)
+	}
+
+	private fun createFakeNodes(nodeCount: Int): List<NodeIdProvider>
+	{
+		return (0 until nodeCount).map {
+			object: NodeIdProvider
+			{
+				override fun nodeId(): ByteArray
+				{
+					val bytes = FakeMacAddress.nodeId()
+					bytes[bytes.lastIndex] = (bytes[bytes.lastIndex] + it.toByte()).toByte()
+					return bytes
+				}
+			}
+		}.toList()
 	}
 
 	@Test
@@ -56,10 +83,10 @@ class IdentifierGenSnowFlakeIdTest
 		println("Throughput: ${idsToGenerate/(end - start).toDouble()} ids/ms")
 	}
 
-	private suspend fun genIds64(count: Int, nodeIdProvider: NodeIdProvider): List<SnowFlakeId>
+	private suspend fun genIds64(count: Int, nodeIdProvider: NodeIdProvider, buffer: Int = 1000, waitTimeMs: Long = 1000): List<SnowFlakeId>
 	{
-		val gen = IdGen(1000, SnowFlakeIdEncoder, nodeId = nodeIdProvider)
-		return (0 until count).map { gen.generate(1000) }
+		val gen = IdGen(buffer, SnowFlakeIdEncoder, nodeId = nodeIdProvider)
+		return (0 until count).map { gen.generate(waitTimeMs) }
 				.toList()
 	}
 }
