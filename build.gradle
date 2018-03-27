@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'idea'
 
 group = 'com.mantono'
-version = '1.0-SNAPSHOT'
+version = '1.0.0'
 description = 'Distributed unique ID generator'
 
 defaultTasks 'test'
@@ -56,6 +56,12 @@ compileKotlin {
     sourceCompatibility = jvm_version
     kotlinOptions {
         jvmTarget = jvm_version
+    }
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 

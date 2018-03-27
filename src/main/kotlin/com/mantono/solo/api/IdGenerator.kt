@@ -1,19 +1,19 @@
 package com.mantono.solo.api
 
-interface IdGenerator<out T: Id>
+import kotlinx.coroutines.experimental.TimeoutCancellationException
+import java.util.concurrent.TimeUnit
+
+interface IdGenerator<out T: Identifier>
 {
 	/**
-	 * An ID that uniquely identifies this generator. This can but must not
-	 * necessarily be unique for a physical node. The important thing is
-	 * that each generator has an unique id, regardless of from what it is
-	 * derived.
+	 * Generate an [Identifier] object, based on [nodeId], a timestamp
+	 * and the amount of calls for this node within a given time span.
+	 *
+	 * @param maxWaitTime the maximum amount of time in the given timeunit
+	 * to wait before throwing a [TimeoutCancellationException]
+	 * @param unit [TimeUnit] for [maxWaitTime]
+	 *
+	 * @return an [Identifier] of type [T]
 	 */
-	val nodeId: ByteArray
-
-	/**
-	 * Generate an [Id] object, based on [nodeId], current timestamp in UNIX
-	 * epoch in milliseconds and sequenceLength of calls for this node within the
-	 * last second.
-	 */
-	suspend fun generate(maxWaitTime: Long = 1_000): T
+	suspend fun generate(maxWaitTime: Long = 1_000, unit: TimeUnit = TimeUnit.MILLISECONDS): T
 }

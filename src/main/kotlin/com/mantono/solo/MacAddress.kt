@@ -2,15 +2,19 @@ package com.mantono.solo
 
 import com.mantono.pyttipanna.Algorithm
 import com.mantono.pyttipanna.hash
+import com.mantono.solo.api.NodeIdProvider
 import java.io.IOException
 import java.net.NetworkInterface
 
-fun getMacAddress(): ByteArray
+object MacAddress: NodeIdProvider
 {
-	if(nonVirtualNetWorkInterfaces().count() == 0)
-		throw IOException("Found no interface to retrieve MAC address from")
-	val hardwareAddress: ByteArray = firstInterface().hardwareAddress
-	return hash(hardwareAddress, algorithm = Algorithm.SHA256)
+	override fun nodeId(): ByteArray
+	{
+		if(nonVirtualNetWorkInterfaces().count() == 0)
+			throw IOException("Found no interface to retrieve MAC address from")
+		val hardwareAddress: ByteArray = firstInterface().hardwareAddress
+		return hash(hardwareAddress, algorithm = Algorithm.SHA256)
+	}
 }
 
 fun nonVirtualNetWorkInterfaces(): Sequence<NetworkInterface> = NetworkInterface
