@@ -1,16 +1,11 @@
 package com.mantono.solo
 
-import com.mantono.solo.api.Identifier
 import com.mantono.solo.api.NodeIdProvider
 import com.mantono.solo.encoders.SnowFlakeIdEncoder
-import com.mantono.solo.generator.IdGen
-import com.mantono.solo.id.SnowFlakeId
 import kotlinx.coroutines.experimental.runBlocking
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import java.time.Instant
 
 class IdentifierGenSnowFlakeIdTest
 {
@@ -18,15 +13,7 @@ class IdentifierGenSnowFlakeIdTest
 	@Test
 	fun uniquenessTestCrazyLongOne()
 	{
-		val idsToGenerate = 5_000_000
-		val start: Long = Instant.now().toEpochMilli()
-		val idList: List<Identifier> = runBlocking { genIds64(idsToGenerate, FakeMacAddress) }
-		val end: Long = Instant.now().toEpochMilli()
-		val idSet: Set<Identifier> = idList.toSet()
-
-		Assertions.assertEquals(idsToGenerate, idList.size)
-		Assertions.assertEquals(idList.size, idSet.size)
-		println("Throughput: ${idsToGenerate/(end - start).toDouble()} ids/ms")
+		testGenerator(10_000_000, SnowFlakeIdEncoder, nodeIdProvider = FakeMacAddress)
 	}
 
 	@Test
@@ -34,7 +21,7 @@ class IdentifierGenSnowFlakeIdTest
 	{
 		val fakeNodes: List<NodeIdProvider> = createFakeNodes(8)
 		val generatedIds = fakeNodes.map {
-			runBlocking { genIds64(500_000, nodeIdProvider = it) }
+			runBlocking { testGenerator(500_000, nodeIdProvider = it, encoder = SnowFlakeIdEncoder) }
 		}.flatten()
 
 		assertEquals(generatedIds.toSet().size, generatedIds.size)
@@ -58,35 +45,12 @@ class IdentifierGenSnowFlakeIdTest
 	@Test
 	fun uniquenessTestWithFakeMacAddressAnd64BitEncoder()
 	{
-		val idsToGenerate = 100_000
-		val start: Long = Instant.now().toEpochMilli()
-		val idList: List<Identifier> = runBlocking { genIds64(idsToGenerate, FakeMacAddress) }
-		val end: Long = Instant.now().toEpochMilli()
-		val idSet: Set<Identifier> = idList.toSet()
-
-		Assertions.assertEquals(idsToGenerate, idList.size)
-		Assertions.assertEquals(idList.size, idSet.size)
-		println("Throughput: ${idsToGenerate/(end - start).toDouble()} ids/ms")
+		testGenerator(100_000, SnowFlakeIdEncoder, nodeIdProvider = FakeMacAddress)
 	}
 
 	@Test
 	fun uniquenessTestWithFakeInvertedMacAddressAnd64BitEncoder()
 	{
-		val idsToGenerate = 100_000
-		val start: Long = Instant.now().toEpochMilli()
-		val idList: List<Identifier> = runBlocking { genIds64(idsToGenerate, FakeMacAddressInverted) }
-		val end: Long = Instant.now().toEpochMilli()
-		val idSet: Set<Identifier> = idList.toSet()
-
-		Assertions.assertEquals(idsToGenerate, idList.size)
-		Assertions.assertEquals(idList.size, idSet.size)
-		println("Throughput: ${idsToGenerate/(end - start).toDouble()} ids/ms")
-	}
-
-	private suspend fun genIds64(count: Int, nodeIdProvider: NodeIdProvider, buffer: Int = 1000, waitTimeMs: Long = 1000): List<SnowFlakeId>
-	{
-		val gen = IdGen(buffer, SnowFlakeIdEncoder, nodeId = nodeIdProvider)
-		return (0 until count).map { gen.generate(waitTimeMs) }
-				.toList()
+		testGenerator(100_000, SnowFlakeIdEncoder, nodeIdProvider = FakeMacAddressInverted)
 	}
 }

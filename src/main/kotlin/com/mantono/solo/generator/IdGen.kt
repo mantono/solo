@@ -1,7 +1,7 @@
 package com.mantono.solo.generator
 
 import com.mantono.solo.Counter
-import com.mantono.solo.MacAddress
+import com.mantono.solo.nodeid.MacAddress
 import com.mantono.solo.MillisecondsSinceUnixEpoch
 import com.mantono.solo.api.Encoder
 import com.mantono.solo.api.IdGenerator
