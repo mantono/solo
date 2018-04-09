@@ -7,6 +7,11 @@ import java.util.*
 
 class SnowFlakeId(private val bytes: ByteArray): Identifier
 {
+	init
+	{
+		require(bytes.size == 8) { "Expected 8 bytes, got: ${bytes.size}" }
+	}
+
 	override fun asBytes(): ByteArray = bytes.copyOf()
 	override fun asString(): String = bytes.toBase64()
 	fun asLong(): Long = bytes.toLong()
