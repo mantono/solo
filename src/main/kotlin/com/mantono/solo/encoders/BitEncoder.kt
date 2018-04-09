@@ -28,16 +28,33 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 			it shl leftShifts
 		}
 
+		println(timestampShifted.bitCount())
+		timestampShifted.toByteArray().joinToString(separator = "-") { it.toString() }.let { System.out.println(it) }
+
 		val nodeIdShifted: BigInteger = BigInteger(nodeId).abs().let {
 			val leftShifts: Int = totalBits - nodeIdBits
 			val rightShifts: Int = timestampBits
 			(it shl leftShifts) shr rightShifts
 		}
 
+		println(nodeIdShifted.bitCount())
+		nodeIdShifted.toByteArray().joinToString(separator = "-") { it.toString() }.let { System.out.println(it) }
+
 		val sequenceShifted: BigInteger = sequence.toBigInteger() shl sequenceBits shr sequenceBits
 
+		println(sequenceShifted.bitCount())
+		sequenceShifted.toByteArray().joinToString(separator = "-") { it.toString() }.let { System.out.println(it) }
+
 		val outcome: BigInteger = (timestampShifted xor nodeIdShifted xor sequenceShifted)
-		return outcome.toByteArray()
+
+		println(outcome.bitCount())
+		outcome.toByteArray().joinToString(separator = "-") { it.toString() }.let { System.out.println(it) }
+
+		val finalBytes: ByteArray = outcome.toByteArray()
+		val missingBytes: Int = totalBytes - finalBytes.size
+		val fullByteArray = ByteArray(missingBytes) { 0 } + finalBytes
+		require(fullByteArray.size == totalBytes) { "Expected $totalBytes bytes, got ${fullByteArray.size}" }
+		return fullByteArray
 	}
 }
 
