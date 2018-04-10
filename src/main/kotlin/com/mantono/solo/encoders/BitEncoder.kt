@@ -3,6 +3,7 @@ package com.mantono.solo.encoders
 import com.mantono.solo.api.Encoder
 import com.mantono.solo.api.Identifier
 import java.math.BigInteger
+import kotlin.math.absoluteValue
 
 abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, override val nodeIdBits: Int, override val sequenceBits: Int): Encoder<T>
 {
@@ -23,32 +24,13 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 
 	fun generateByteArray(timestamp: Long, nodeId: ByteArray, sequence: Long): ByteArray
 	{
-		val timestampShifted: BigInteger = timestamp.toBigInteger().let {
-			val leftShifts: Int = totalBits - timestampBits
-			it shl leftShifts
-		}
+		val ts: BigInteger = timestamp.toBigInteger().reduceTo(timestampBits - 1).shl(nodeIdBits + sequenceBits)
+		val node: BigInteger = BigInteger(nodeId).reduceTo(nodeIdBits).shl(sequenceBits)
+		val seq: BigInteger = sequence.toBigInteger()
 
-		println(timestampShifted.bitCount())
-		timestampShifted.toByteArray().joinToString(separator = "-") { it.toString() }.let { System.out.println(it) }
+		val outcome: BigInteger = (ts xor node xor seq).abs()
 
-		val nodeIdShifted: BigInteger = BigInteger(nodeId).abs().let {
-			val leftShifts: Int = totalBits - nodeIdBits
-			val rightShifts: Int = timestampBits
-			(it shl leftShifts) shr rightShifts
-		}
-
-		println(nodeIdShifted.bitCount())
-		nodeIdShifted.toByteArray().joinToString(separator = "-") { it.toString() }.let { System.out.println(it) }
-
-		val sequenceShifted: BigInteger = sequence.toBigInteger() shl sequenceBits shr sequenceBits
-
-		println(sequenceShifted.bitCount())
-		sequenceShifted.toByteArray().joinToString(separator = "-") { it.toString() }.let { System.out.println(it) }
-
-		val outcome: BigInteger = (timestampShifted xor nodeIdShifted xor sequenceShifted)
-
-		println(outcome.bitCount())
-		outcome.toByteArray().joinToString(separator = "-") { it.toString() }.let { System.out.println(it) }
+		println("$ts|$node|$seq")
 
 		val finalBytes: ByteArray = outcome.toByteArray()
 		val bytesDiff: Int = totalBytes - finalBytes.size
@@ -56,11 +38,23 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 		{
 			bytesDiff > 0 -> ByteArray(bytesDiff) { 0 } + finalBytes
 			bytesDiff == 0 -> finalBytes
-			else -> throw IllegalStateException("Negative diff: $bytesDiff")
-		}.also{
+			else -> finalBytes.sliceArray(bytesDiff.absoluteValue .. finalBytes.lastIndex)
+		}.also {
 			require(it.size == totalBytes) { "Expected $totalBytes bytes, got ${it.size}" }
 		}
 	}
+}
+
+fun BigInteger.reduceTo(bits: Int): BigInteger
+{
+	val rightShifts: Int = (bitLength() - bits).coerceAtLeast(0)
+	return shr(rightShifts)
+}
+
+fun BigInteger.increaseTo(bits: Int): BigInteger
+{
+	val leftShifts: Int = (bits - bitLength()).coerceAtLeast(0)
+	return shl(leftShifts)
 }
 
 fun Long.toBigInteger(): BigInteger = BigInteger.valueOf(this)

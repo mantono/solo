@@ -54,7 +54,7 @@ fun <T: Identifier> testGenerator(
 	val idSet: Set<Identifier> = idList.toSet()
 
 	assertEquals(count, idList.size)
-	assertEquals(idList.size, idSet.size)
+	assertEquals(idList.size, idSet.size) { idList.joinToString(separator = "\n") { it.asString() } }
 	println("Throughput: ${count/(end - start).toDouble()} ids/ms")
 
 	return idList
