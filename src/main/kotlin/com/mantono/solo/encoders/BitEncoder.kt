@@ -51,10 +51,15 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 		outcome.toByteArray().joinToString(separator = "-") { it.toString() }.let { System.out.println(it) }
 
 		val finalBytes: ByteArray = outcome.toByteArray()
-		val missingBytes: Int = totalBytes - finalBytes.size
-		val fullByteArray = ByteArray(missingBytes) { 0 } + finalBytes
-		require(fullByteArray.size == totalBytes) { "Expected $totalBytes bytes, got ${fullByteArray.size}" }
-		return fullByteArray
+		val bytesDiff: Int = totalBytes - finalBytes.size
+		return when
+		{
+			bytesDiff > 0 -> ByteArray(bytesDiff) { 0 } + finalBytes
+			bytesDiff == 0 -> finalBytes
+			else -> throw IllegalStateException("Negative diff: $bytesDiff")
+		}.also{
+			require(it.size == totalBytes) { "Expected $totalBytes bytes, got ${it.size}" }
+		}
 	}
 }
 

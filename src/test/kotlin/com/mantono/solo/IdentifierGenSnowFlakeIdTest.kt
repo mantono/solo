@@ -1,14 +1,17 @@
 package com.mantono.solo
 
 import com.mantono.solo.api.NodeIdProvider
+import com.mantono.solo.encoders.FlakeIdEncoder
 import com.mantono.solo.encoders.SnowFlakeIdEncoder
 import com.mantono.solo.generator.IdGen
 import com.mantono.solo.id.SnowFlakeId
+import com.mantono.solo.nodeid.MacAddress
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import java.util.concurrent.TimeUnit
 
 class IdentifierGenSnowFlakeIdTest
 {
@@ -58,10 +61,24 @@ class IdentifierGenSnowFlakeIdTest
 	}
 
 	@Test
+	fun testBitEncoderForSnowFlakeId1()
+	{
+		val id = SnowFlakeIdEncoder.encode(MillisecondsSinceUnixEpoch.timestamp(), FakeMacAddress.nodeId(), 0L)
+		assertEquals(8, id.asBytes().size)
+	}
+
+	@Test
+	fun testBitEncoderForSnowFlakeId2()
+	{
+		val id = SnowFlakeIdEncoder.encode(SecondsSinceUnixEpoch.timestamp(), FakeMacAddressInverted.nodeId(), 999L)
+		assertEquals(8, id.asBytes().size)
+	}
+
+	@Test
 	fun testAsLong()
 	{
 		val generator = IdGen<SnowFlakeId>(10, SnowFlakeIdEncoder, MillisecondsSinceUnixEpoch)
-		val id: Long = runBlocking { generator.generate().asLong() }
+		val id: Long = runBlocking { generator.generate(600, TimeUnit.SECONDS).asLong() }
 		assertNotEquals(0L, id)
 	}
 }

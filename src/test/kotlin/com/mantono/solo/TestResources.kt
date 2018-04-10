@@ -1,5 +1,7 @@
 package com.mantono.solo
 
+import com.mantono.pyttipanna.Algorithm
+import com.mantono.pyttipanna.hash
 import com.mantono.solo.api.Encoder
 import com.mantono.solo.api.IdGenerator
 import com.mantono.solo.api.Identifier
@@ -21,7 +23,7 @@ internal object FakeMacAddress: NodeIdProvider
 			0xd8.toByte(),
 			0xda.toByte(),
 			0x6d.toByte()
-	)
+	).let { hash(it, algorithm = Algorithm.SHA256) }
 }
 
 internal object FakeMacAddressInverted: NodeIdProvider
@@ -33,7 +35,7 @@ internal object FakeMacAddressInverted: NodeIdProvider
 			0xd8.toByte(),
 			0xda.toByte(),
 			0x6d.toByte()
-	)
+	).let { hash(it, algorithm = Algorithm.SHA256) }
 }
 
 fun <T: Identifier> testGenerator(
