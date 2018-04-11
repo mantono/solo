@@ -39,7 +39,7 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 		{
 			bytesDiff > 0 -> ByteArray(bytesDiff) { 0 } + finalBytes
 			bytesDiff == 0 -> finalBytes
-			else -> finalBytes.sliceArray(bytesDiff.absoluteValue .. finalBytes.lastIndex)
+			else -> throw IllegalStateException("Byte delta is negative")
 		}.also {
 			require(it.size == totalBytes) { "Expected $totalBytes bytes, got ${it.size}" }
 		}
@@ -48,20 +48,14 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 
 fun BigInteger.reduceToLeastSignificantBits(bits: Int): BigInteger
 {
-	val bitDelta: Int = (bitLength() - bits).coerceAtLeast(0)
-	return removeMostSignificantBits(bitDelta).also {
-		require(it.bitCount() <= bits) { "${it.bitCount()} != $bits" }
-	}
-}
-
-fun BigInteger.removeMostSignificantBits(bits: Int): BigInteger
-{
 	if(bits == 0)
 		return this
 
-	val shifts = bitLength() - bits
-	val mask = this shr shifts shl shifts
-	return this xor mask
+	val mask = this shr bits shl bits
+	return (this xor mask).also {
+		require(it.bitCount() <= bits) { "${it.bitCount()} > $bits" }
+	}
+
 }
 
 fun Long.toBigInteger(): BigInteger = BigInteger.valueOf(this)
