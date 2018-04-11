@@ -30,8 +30,8 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 
 		val outcome: BigInteger = (ts xor node xor seq).abs()
 
-		//print("$timestamp|$node|$sequence -->")
-		//println("$ts|$node|$seq")
+//		print("$timestamp|$node|$sequence -->")
+//		println("$ts|$node|$seq")
 
 		val finalBytes: ByteArray = outcome.toByteArray()
 		val bytesDiff: Int = totalBytes - finalBytes.size
@@ -58,17 +58,10 @@ fun BigInteger.removeMostSignificantBits(bits: Int): BigInteger
 {
 	if(bits == 0)
 		return this
-	val reversed = BigInteger(this.toByteArray().reversedArray())
-	val shifted = reversed shr bits shl bits
-	return BigInteger(shifted.toByteArray().reversedArray())
-}
 
-fun BigInteger.reverseBits(): BigInteger = BigInteger(this.toByteArray().reversedArray())
-
-fun BigInteger.increaseTo(bits: Int): BigInteger
-{
-	val leftShifts: Int = (bits - bitLength()).coerceAtLeast(0)
-	return shl(leftShifts)
+	val shifts = bitLength() - bits
+	val mask = this shr shifts shl shifts
+	return this xor mask
 }
 
 fun Long.toBigInteger(): BigInteger = BigInteger.valueOf(this)

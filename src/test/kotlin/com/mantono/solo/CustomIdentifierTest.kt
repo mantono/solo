@@ -10,9 +10,7 @@ class CustomIdentifierTest
 	@Test
 	fun testUniquesInEncoderWithLowSequenceEntropy()
 	{
-		testGenerator(1_000, EncoderWithShortSequence, nodeIdProvider = FakeMacAddress, buffer = 50, waitTimeMs = 300_000).forEach {
-			println(it.asString())
-		}
+		testGenerator(1_000, EncoderWithShortSequence, nodeIdProvider = FakeMacAddress, buffer = 50, waitTimeMs = 300_000)
 	}
 }
 
