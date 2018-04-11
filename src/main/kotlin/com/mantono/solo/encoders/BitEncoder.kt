@@ -24,13 +24,14 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 
 	fun generateByteArray(timestamp: Long, nodeId: ByteArray, sequence: Long): ByteArray
 	{
-		val ts: BigInteger = timestamp.toBigInteger().reduceTo(timestampBits - 1).shl(nodeIdBits + sequenceBits)
-		val node: BigInteger = BigInteger(nodeId).reduceTo(nodeIdBits).shl(sequenceBits)
+		val ts: BigInteger = timestamp.toBigInteger().reduceToLeastSignificantBits(timestampBits - 1).shl(nodeIdBits + sequenceBits)
+		val node: BigInteger = BigInteger(nodeId).reduceToLeastSignificantBits(nodeIdBits).shl(sequenceBits)
 		val seq: BigInteger = sequence.toBigInteger()
 
 		val outcome: BigInteger = (ts xor node xor seq).abs()
 
-		println("$ts|$node|$seq")
+		//print("$timestamp|$node|$sequence -->")
+		//println("$ts|$node|$seq")
 
 		val finalBytes: ByteArray = outcome.toByteArray()
 		val bytesDiff: Int = totalBytes - finalBytes.size
@@ -45,11 +46,24 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 	}
 }
 
-fun BigInteger.reduceTo(bits: Int): BigInteger
+fun BigInteger.reduceToLeastSignificantBits(bits: Int): BigInteger
 {
-	val rightShifts: Int = (bitLength() - bits).coerceAtLeast(0)
-	return shr(rightShifts)
+	val bitDelta: Int = (bitLength() - bits).coerceAtLeast(0)
+	return removeMostSignificantBits(bitDelta).also {
+		require(it.bitCount() <= bits) { "${it.bitCount()} != $bits" }
+	}
 }
+
+fun BigInteger.removeMostSignificantBits(bits: Int): BigInteger
+{
+	if(bits == 0)
+		return this
+	val reversed = BigInteger(this.toByteArray().reversedArray())
+	val shifted = reversed shr bits shl bits
+	return BigInteger(shifted.toByteArray().reversedArray())
+}
+
+fun BigInteger.reverseBits(): BigInteger = BigInteger(this.toByteArray().reversedArray())
 
 fun BigInteger.increaseTo(bits: Int): BigInteger
 {
