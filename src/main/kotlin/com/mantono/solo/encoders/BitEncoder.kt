@@ -2,6 +2,7 @@ package com.mantono.solo.encoders
 
 import com.mantono.solo.api.Encoder
 import com.mantono.solo.api.Identifier
+import com.mantono.solo.id.toLong
 import java.math.BigInteger
 import kotlin.math.absoluteValue
 
@@ -30,8 +31,8 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 
 		val outcome: BigInteger = (ts xor node xor seq).abs()
 
-//		print("$timestamp|$node|$sequence -->")
-//		println("$ts|$node|$seq")
+		print("$timestamp|${BigInteger(nodeId)}|$sequence --> ")
+		print("$ts|$node|$seq --> ")
 
 		val finalBytes: ByteArray = outcome.toByteArray()
 		val bytesDiff: Int = totalBytes - finalBytes.size
@@ -42,6 +43,7 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 			else -> throw IllegalStateException("Byte delta is negative")
 		}.also {
 			require(it.size == totalBytes) { "Expected $totalBytes bytes, got ${it.size}" }
+			println(it.toLong())
 		}
 	}
 }
