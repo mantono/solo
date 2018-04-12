@@ -10,14 +10,18 @@ fun BigInteger.toBits(): List<Byte>
 	return emptyList()
 }
 
+fun Long.toBitString(): String = BigInteger.valueOf(this).toBitsString()
+fun String.toBitString(): String = BigInteger(this).toBitsString()
+
 fun BigInteger.toBitsString(): String
 {
-	val x = if(signum() <= -1) inv().plus(BigInteger.ONE) else this
+	val negative: Boolean = signum() <= -1
+	val x = if(negative) inv().plus(BigInteger.ONE) else this
 	return x.toString(2)
 			.let {
 				val leftPad: Int = 8 - (it.length % 8)
 				val padded = String(CharArray(leftPad) { '0' }) + it
-				if(signum() <= -1) invert(padded) else padded
+				if(negative) invert(padded) else padded
 			}
 			.mapIndexed { index, c ->
 				if(index % 8 == 0 && index != 0) " $c" else "$c"

@@ -3,6 +3,7 @@ package com.mantono.solo.encoders
 import com.mantono.solo.api.Encoder
 import com.mantono.solo.api.Identifier
 import com.mantono.solo.id.toLong
+import com.mantono.solo.toBitsString
 import java.math.BigInteger
 import kotlin.math.absoluteValue
 
@@ -44,6 +45,7 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 		}.also {
 			require(it.size == totalBytes) { "Expected $totalBytes bytes, got ${it.size}" }
 			println(it.toLong())
+			println("${ts.toBitsString()}|${node.toBitsString()}|${seq.toBitsString()}\n")
 		}
 	}
 }
