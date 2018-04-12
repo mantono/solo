@@ -16,34 +16,11 @@ fun BigInteger.toBitsString(): String
 	return x.toString(2)
 			.let {
 				val padWith: Char = if(signum() >= 0) '0' else '1'
-				val leftPad: Int = 8 - it.length
+				val leftPad: Int = 8 - (it.length % 8)
 				String(CharArray(leftPad) { padWith }) + it
 			}
-}
-
-/**
-fun BigInteger.toBits(): List<Byte>
-{
-	System.out.println("$this -> ${this.bitLength()} / ${this.bitCount()}")
-	val bitRange: IntRange = 0 .. bitLength()
-
-	return bitRange.asSequence()
-			.map {
-				when(testBit(it))
-				{
-					true -> 1.toByte()
-					false -> 0.toByte()
-				}
+			.mapIndexed { index, c ->
+				if(index % 8 == 0 && index != 0) " $c" else "$c"
 			}
-			.toList()
+			.joinToString(separator = "") { it }
 }
-
-fun BigInteger.toBitsString(): String = toBits()
-		.mapIndexed { index, s -> if(index % 8 == 0 && index > 0) "$s " else s.toString() }
-		.joinToString(separator = "") { it }
-		.let {
-			val padWith: Char = if(signum() >= 0) '0' else '1'
-			val leftPad: Int = 8 - it.length
-			String(CharArray(leftPad) { padWith }) + it
-		}
-		**/

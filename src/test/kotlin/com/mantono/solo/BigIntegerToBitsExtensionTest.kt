@@ -29,4 +29,10 @@ class BigIntegerToBitsExtensionTest
 	{
 		assertEquals("11111110", BigInteger.valueOf(-1L).toBitsString())
 	}
+
+	@Test
+	fun testBigIntegerToBitsSeveralBytes()
+	{
+		assertEquals("00000100 00000000", BigInteger.valueOf(1024L).toBitsString())
+	}
 }
