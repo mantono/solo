@@ -25,7 +25,7 @@ class Counter(sequenceBits: Int): SequenceCounter
 	private var counter: Long = 0
 		set(value)
 		{
-			field = value.coerceAtMost(max)
+			field = value.coerceAtMost(max + 1)
 		}
 
 	override fun next(timestamp: TimestampProvider): Pair<Long, Long>?
@@ -35,10 +35,10 @@ class Counter(sequenceBits: Int): SequenceCounter
 		else
 			++counter
 
-		return if(counter == max)
-			null
-		else
+		return if(counter <= max)
 			lastTimestamp to counter
+		else
+			null
 	}
 
 	private fun resetTime(timestamp: Long): Boolean

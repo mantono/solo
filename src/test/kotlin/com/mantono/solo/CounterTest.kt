@@ -56,7 +56,13 @@ class CounterTest
 			values.add(seq)
 		}
 
+		c.next(StaticTimeStampProvider)?.let { (ts, seq) ->
+			assertEquals(1L, ts)
+			assertEquals(3, seq)
+			values.add(seq)
+		}
+
 		assertNull(c.next(StaticTimeStampProvider))
-		assertEquals(3, values.size)
+		assertEquals(4, values.size)
 	}
 }
