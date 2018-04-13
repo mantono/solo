@@ -33,9 +33,6 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 
 		val outcome: BigInteger = (ts xor node xor seq).abs()
 
-		//print("$timestamp|${BigInteger(nodeId)}|$sequence --> ")
-		//print("$ts|$node|$seq --> ")
-
 		val finalBytes: ByteArray = outcome.toByteArray()
 		val bytesDiff: Int = totalBytes - finalBytes.size
 		return when
@@ -45,8 +42,6 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 			else -> throw IllegalStateException("Byte delta is negative")
 		}.also {
 			require(it.size == totalBytes) { "Expected $totalBytes bytes, got ${it.size}" }
-			//println("\n${ts.toBitsString()}|${node.toBitsString()}|${seq.toBitsString()}")
-			println(it.toLong().toBitString())
 		}
 	}
 }

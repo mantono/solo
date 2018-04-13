@@ -1,31 +1,61 @@
 package com.mantono.solo
 
+import com.mantono.solo.api.Identifier
 import java.math.BigInteger
 import java.util.*
 
-fun BigInteger.toBits(): List<Byte>
+fun BigInteger.toBits(): List<Byte> = toBitsString("", 0)
+		.map { it.toString().toByte() }
+
+fun Long.toBitString(delimiter: String = "", delimiterInterval: Int = 0): String
 {
-	val bits = BitSet.valueOf(this.toByteArray())
-	System.out.println(bits.cardinality())
-	return emptyList()
+	return BigInteger.valueOf(this).toBitsString(delimiter, delimiterInterval)
 }
 
-fun Long.toBitString(): String = BigInteger.valueOf(this).toBitsString()
-fun String.toBitString(): String = BigInteger(this).toBitsString()
+fun String.toBitString(delimiter: String = "", delimiterInterval: Int = 0): String
+{
+	return BigInteger(this).toBitsString(delimiter, delimiterInterval)
+}
 
-fun BigInteger.toBitsString(): String
+fun ByteArray.toBitString(delimiter: String = "", delimiterInterval: Int = 0): String
+{
+	return BigInteger(this).toBitsString(delimiter, delimiterInterval)
+}
+
+fun Identifier.toBitString(delimiter: String = "", delimiterInterval: Int = 0): String
+{
+	return BigInteger(this.asBytes()).toBitsString(delimiter, delimiterInterval)
+}
+
+
+fun BigInteger.toBitsString(delimiter: String = " ", delimiterInterval: Int = 8): String
 {
 	val negative: Boolean = signum() <= -1
-	val x = if(negative) inv().plus(BigInteger.ONE) else this
-	return x.toString(2)
-			.let {
-				val leftPad: Int = 8 - (it.length % 8)
-				val padded = String(CharArray(leftPad) { '0' }) + it
-				if(negative) invert(padded) else padded
-			}
-			.mapIndexed { index, c ->
-				if(index % 8 == 0 && index != 0) " $c" else "$c"
-			}
+	val unsigned = if(negative) inv().plus(BigInteger.ONE) else this
+	return unsigned.toString(2)
+			.padZeroes()
+			.let { if(negative) invert(it) else it }
+			.withDelimiter(delimiter, delimiterInterval)
+}
+
+private fun String.padZeroes(): String
+{
+	val leftPad: Int = 8 - (length % 8)
+	return String(CharArray(leftPad) { '0' }) + this
+}
+
+private fun String.withDelimiter(delimiter: String, delimiterInterval: Int): String
+{
+	if(delimiterInterval == 0 || delimiter.isEmpty())
+		return this
+
+	return mapIndexed { index, c ->
+		when {
+			index == 0 -> "$c"
+			index % delimiterInterval == 0 -> "$delimiter$c"
+			else -> "$c"
+		}
+	}
 			.joinToString(separator = "") { it }
 }
 

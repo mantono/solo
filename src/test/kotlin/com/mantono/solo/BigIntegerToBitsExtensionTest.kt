@@ -36,6 +36,13 @@ class BigIntegerToBitsExtensionTest
 		assertEquals("00000100 00000000", BigInteger.valueOf(1024L).toBitsString())
 	}
 
+
+	@Test
+	fun testBigIntegerToBitsSeveralBytesNoSpaces()
+	{
+		assertEquals("0000010000000000", BigInteger.valueOf(1024L).toBitsString(delimiter = "", delimiterInterval = 0))
+	}
+
 	@Test
 	fun testBigIntegerToBitsSeveralBytesNegative()
 	{
