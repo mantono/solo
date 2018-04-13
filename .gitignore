@@ -18,3 +18,5 @@ solo.ipr
 solo.iws
 solo_main.iml
 solo_test.iml
+classes
+.idea

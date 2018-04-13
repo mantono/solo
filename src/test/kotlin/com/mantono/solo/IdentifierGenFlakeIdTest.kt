@@ -17,6 +17,13 @@ import java.util.concurrent.TimeUnit
 
 class IdentifierGenFlakeIdTest
 {
+	@Test
+	fun testBitEncoderForFlakeId()
+	{
+		val id = FlakeIdEncoder.encode(MillisecondsSinceUnixEpoch.timestamp(), FakeMacAddress.nodeId(), 0L)
+		assertEquals(16, id.asBytes().size)
+	}
+
 	@Disabled
 	@Test
 	fun uniquenessTestCrazyLongOne()

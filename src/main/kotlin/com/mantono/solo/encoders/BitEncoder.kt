@@ -2,7 +2,11 @@ package com.mantono.solo.encoders
 
 import com.mantono.solo.api.Encoder
 import com.mantono.solo.api.Identifier
+import com.mantono.solo.id.toLong
+import com.mantono.solo.toBitString
+import com.mantono.solo.toBitsString
 import java.math.BigInteger
+import kotlin.math.absoluteValue
 
 abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, override val nodeIdBits: Int, override val sequenceBits: Int): Encoder<T>
 {
@@ -23,22 +27,38 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 
 	fun generateByteArray(timestamp: Long, nodeId: ByteArray, sequence: Long): ByteArray
 	{
-		val timestampShifted: BigInteger = timestamp.toBigInteger().let {
-			val leftShifts: Int = totalBits - timestampBits
-			it shl leftShifts
-		}
+		val ts: BigInteger = timestamp.toBigInteger().reduceToLeastSignificantBits(timestampBits - 1).shl(nodeIdBits + sequenceBits)
+		val node: BigInteger = BigInteger(nodeId).reduceToLeastSignificantBits(nodeIdBits).shl(sequenceBits)
+		val seq: BigInteger = sequence.toBigInteger()
 
-		val nodeIdShifted: BigInteger = BigInteger(nodeId).abs().let {
-			val leftShifts: Int = totalBits - nodeIdBits
-			val rightShifts: Int = timestampBits
-			(it shl leftShifts) shr rightShifts
-		}
-
-		val sequenceShifted: BigInteger = sequence.toBigInteger() shl sequenceBits shr sequenceBits
-
-		val outcome: BigInteger = (timestampShifted xor nodeIdShifted xor sequenceShifted)
-		return outcome.toByteArray()
+		val outcome: BigInteger = (ts xor node xor seq).abs()
+		return outcome.toByteArray().expandTo(totalBytes)
 	}
 }
 
+fun BigInteger.reduceToLeastSignificantBits(bits: Int): BigInteger
+{
+	if(bits == 0)
+		return this
+
+	val mask = this shr bits shl bits
+	return (this xor mask).also {
+		require(it.bitCount() <= bits) { "${it.bitCount()} > $bits" }
+	}
+
+}
+
 fun Long.toBigInteger(): BigInteger = BigInteger.valueOf(this)
+
+private fun ByteArray.expandTo(newSize: Int): ByteArray
+{
+	val bytesDiff: Int = newSize - size
+	return when
+	{
+		bytesDiff > 0 -> ByteArray(bytesDiff) { 0 } + this
+		bytesDiff == 0 -> this
+		else -> throw IllegalStateException("Byte delta is negative")
+	}.also {
+		require(it.size == newSize) { "Expected $newSize bytes, got ${it.size}" }
+	}
+}
