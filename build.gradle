@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'idea'
 
 group = 'com.mantono'
-version = '1.0.1'
+version = '1.0.2'
 description = 'Distributed unique ID generator'
 
 defaultTasks 'test'
