@@ -33,7 +33,7 @@ class IdGen<out T: Identifier>(
 	override suspend fun generate(maxWaitTime: Long, unit: TimeUnit): T = idChannel.receive(maxWaitTime, unit)
 }
 
-suspend fun <E> ReceiveChannel<E>.receive(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS): E
+private suspend fun <E> ReceiveChannel<E>.receive(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS): E
 {
 	val rc = this
 	return withTimeout(time, unit) { rc.receive() }
