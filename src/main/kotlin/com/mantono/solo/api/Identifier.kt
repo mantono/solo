@@ -7,8 +7,9 @@ interface Identifier
 
 	/**
 	 * By default this returns the
-	 * number of bytes in the ByteArray (@see [asBytes]) times 8. Should an implementation
-	 * chose not to utilize all bits in each byte of the ByteArray
+	 * number of bytes in the ByteArray (@see [asBytes]) times 8. This function should
+	 * be overridden if an implementation
+	 * chooses not to utilize all bits in each byte of the ByteArray
 	 *
 	 * @return the number of bits that this Identifier has.
 	 */
