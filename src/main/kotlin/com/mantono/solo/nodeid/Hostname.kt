@@ -7,19 +7,19 @@ import java.io.File
 import java.nio.file.Files
 import kotlin.streams.toList
 
-object Hostname: NodeIdProvider
+class Hostname(private val envVars: EnvironmentVariableReader = EnvironmentVariables): NodeIdProvider
 {
 	override fun nodeId(): ByteArray
 	{
-		val hostname: String = hostname()
+		val hostname: String = hostname(envVars)
 		return hash(hostname, algorithm = Algorithm.SHA256)
 	}
 }
 
-fun hostname(): String
+fun hostname(env: EnvironmentVariableReader): String
 {
-	val envVarComputerName: String? = System.getenv("COMPUTERNAME")
-	val envVarHostName: String? = System.getenv("HOSTNAME")
+	val envVarComputerName: String? = env.readEnv("COMPUTERNAME")
+	val envVarHostName: String? = env.readEnv("HOSTNAME")
 	val hostnameFile: String? = readHostnameFile()
 
 	return sequenceOf(envVarComputerName, envVarHostName, hostnameFile)
