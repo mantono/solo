@@ -1,8 +1,9 @@
 package com.mantono.solo.api
 
 import toBase64
+import java.io.Serializable
 
-interface Identifier
+interface Identifier: Serializable
 {
 
 	/**
