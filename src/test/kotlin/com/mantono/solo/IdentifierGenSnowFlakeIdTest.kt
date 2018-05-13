@@ -27,7 +27,7 @@ class IdentifierGenSnowFlakeIdTest
 	{
 		val fakeNodes: List<NodeIdProvider> = createFakeNodes(8)
 		val generatedIds = fakeNodes.map {
-			runBlocking { testGenerator(500_000, nodeIdProvider = it, encoder = SnowFlakeIdEncoder) }
+			runBlocking { testGenerator(10_000, nodeIdProvider = it, encoder = SnowFlakeIdEncoder) }
 		}.flatten()
 
 		assertEquals(generatedIds.toSet().size, generatedIds.size)
