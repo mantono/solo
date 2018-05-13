@@ -32,3 +32,21 @@ interface Identifier
 	 */
 	fun asString(): String = asBytes().toBase64()
 }
+
+private val base64Regex = Regex("^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})\$")
+
+/**
+ * Allows for an [Identifier] that has been serialized in the form of an encoded base64 String to
+ * be decoded and converted back to an [Identifier].
+ */
+fun identifierFrom(base64Input: String): Identifier
+{
+	if(!base64Input.matches(base64Regex))
+		throw IllegalArgumentException("Input $base64Input is not a valid base64 encoded data")
+
+	val bytes: ByteArray = java.util.Base64.getDecoder().decode(base64Input)
+	return object: Identifier
+	{
+		override fun asBytes(): ByteArray = bytes
+	}
+}
