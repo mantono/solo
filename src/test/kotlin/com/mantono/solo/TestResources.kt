@@ -1,6 +1,6 @@
 package com.mantono.solo
 
-import com.mantono.pyttipanna.Algorithm
+import com.mantono.pyttipanna.HashAlgorithm
 import com.mantono.pyttipanna.hash
 import com.mantono.solo.api.Encoder
 import com.mantono.solo.api.IdGenerator
@@ -9,7 +9,6 @@ import com.mantono.solo.api.NodeIdProvider
 import com.mantono.solo.api.TimestampProvider
 import com.mantono.solo.generator.IdGen
 import kotlinx.coroutines.experimental.runBlocking
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import java.time.Instant
 import kotlin.experimental.inv
@@ -23,7 +22,7 @@ internal object FakeMacAddress: NodeIdProvider
 			0xd8.toByte(),
 			0xda.toByte(),
 			0x6d.toByte()
-	).let { hash(it, algorithm = Algorithm.SHA256) }
+	).let { hash(it, algorithm = HashAlgorithm.SHA256) }
 }
 
 internal object FakeMacAddressInverted: NodeIdProvider
@@ -35,7 +34,7 @@ internal object FakeMacAddressInverted: NodeIdProvider
 			0xd8.toByte(),
 			0xda.toByte(),
 			0x6d.toByte()
-	).let { hash(it, algorithm = Algorithm.SHA256) }
+	).let { hash(it, algorithm = HashAlgorithm.SHA256) }
 }
 
 fun <T: Identifier> testGenerator(

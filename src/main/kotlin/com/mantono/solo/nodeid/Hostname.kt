@@ -1,6 +1,6 @@
 package com.mantono.solo.nodeid
 
-import com.mantono.pyttipanna.Algorithm
+import com.mantono.pyttipanna.HashAlgorithm
 import com.mantono.pyttipanna.hash
 import com.mantono.solo.api.NodeIdProvider
 import java.io.File
@@ -12,7 +12,7 @@ class Hostname(private val envVars: EnvironmentVariableReader = EnvironmentVaria
 	override fun nodeId(): ByteArray
 	{
 		val hostname: String = hostname(envVars)
-		return hash(hostname, algorithm = Algorithm.SHA256)
+		return hash(hostname, algorithm = HashAlgorithm.SHA256)
 	}
 }
 

@@ -43,19 +43,9 @@ dependencies {
     compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version
     compile group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-jdk8', version: '0.22.5'
     compile group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: '0.22.5'
-    compile 'com.github.mantono:red-unicorn:bf5fcc95d0'
-    compile 'com.github.mantono:pyttipanna:0.1.3'
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.1.0'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
-}
-
-junitPlatform {
-    platformVersion = junit_platform_version
-    filters {
-        engines {
-            include 'junit-jupiter'
-        }
-    }
+    implementation 'com.github.mantono:pyttipanna:0.2.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.2.0'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
 }
 
 compileKotlin {
