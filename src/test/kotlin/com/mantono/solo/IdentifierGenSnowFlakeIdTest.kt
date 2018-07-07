@@ -1,11 +1,9 @@
 package com.mantono.solo
 
 import com.mantono.solo.api.NodeIdProvider
-import com.mantono.solo.encoders.FlakeIdEncoder
 import com.mantono.solo.encoders.SnowFlakeIdEncoder
 import com.mantono.solo.generator.IdGen
 import com.mantono.solo.id.SnowFlakeId
-import com.mantono.solo.nodeid.MacAddress
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals

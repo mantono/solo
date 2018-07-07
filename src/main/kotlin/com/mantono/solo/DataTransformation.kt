@@ -2,7 +2,6 @@ package com.mantono.solo
 
 import com.mantono.solo.api.Identifier
 import java.math.BigInteger
-import java.util.*
 
 fun BigInteger.toBits(): List<Byte> = toBitsString("", 0)
 		.map { it.toString().toByte() }

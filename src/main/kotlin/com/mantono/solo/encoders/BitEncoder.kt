@@ -2,11 +2,7 @@ package com.mantono.solo.encoders
 
 import com.mantono.solo.api.Encoder
 import com.mantono.solo.api.Identifier
-import com.mantono.solo.id.toLong
-import com.mantono.solo.toBitString
-import com.mantono.solo.toBitsString
 import java.math.BigInteger
-import kotlin.math.absoluteValue
 
 abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, override val nodeIdBits: Int, override val sequenceBits: Int): Encoder<T>
 {

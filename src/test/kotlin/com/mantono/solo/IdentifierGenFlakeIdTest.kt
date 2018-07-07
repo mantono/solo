@@ -4,15 +4,12 @@ import com.mantono.solo.api.Identifier
 import com.mantono.solo.api.NodeIdProvider
 import com.mantono.solo.encoders.FlakeIdEncoder
 import com.mantono.solo.generator.IdGen
-import com.mantono.solo.nodeid.Hostname
-import com.mantono.solo.nodeid.hostname
 import kotlinx.coroutines.experimental.TimeoutCancellationException
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 class IdentifierGenFlakeIdTest
