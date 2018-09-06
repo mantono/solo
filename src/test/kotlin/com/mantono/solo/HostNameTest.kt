@@ -12,7 +12,6 @@ class HostNameTest
 	{
 		override fun readEnv(variable: String, default: String): String = throw NotImplementedError()
 		override fun readEnv(variable: String): String? = envVars[variable]
-
 	}
 
 	@Test

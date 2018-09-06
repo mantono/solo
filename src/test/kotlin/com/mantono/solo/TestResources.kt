@@ -8,47 +8,48 @@ import com.mantono.solo.api.Identifier
 import com.mantono.solo.api.NodeIdProvider
 import com.mantono.solo.api.TimestampProvider
 import com.mantono.solo.generator.IdGen
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import java.time.Instant
 import kotlin.experimental.inv
 
 internal object FakeMacAddress: NodeIdProvider
 {
-	override fun nodeId(): ByteArray = byteArrayOf(
+	override fun nodeId(): ByteArray = hash(byteArrayOf(
 			0x96.toByte(),
 			0xb6.toByte(),
 			0xd0.toByte(),
 			0xd8.toByte(),
 			0xda.toByte(),
 			0x6d.toByte()
-	).let { hash(it, algorithm = HashAlgorithm.SHA256) }
+	), algorithm = HashAlgorithm.SHA256)
 }
 
 internal object FakeMacAddressInverted: NodeIdProvider
 {
-	override fun nodeId(): ByteArray = byteArrayOf(
+	override fun nodeId(): ByteArray = hash(byteArrayOf(
 			0x96.toByte().inv(),
 			0xb6.toByte(),
 			0xd0.toByte(),
 			0xd8.toByte(),
 			0xda.toByte(),
 			0x6d.toByte()
-	).let { hash(it, algorithm = HashAlgorithm.SHA256) }
+	), algorithm = HashAlgorithm.SHA256)
 }
 
+@ExperimentalUnsignedTypes
 fun <T: Identifier> testGenerator(
 		count: Int,
 		encoder: Encoder<T>,
 		timestampProvider: TimestampProvider = MillisecondsSinceUnixEpoch,
 		nodeIdProvider: NodeIdProvider = FakeMacAddress,
-		buffer: Int = 1000,
-		waitTimeMs: Long = 1000
+		buffer: UInt = 1000u,
+		waitTimeMs: ULong = 1000u
 ): List<Identifier>
 {
 	val start: Long = Instant.now().toEpochMilli()
 	val generator: IdGenerator<T> = IdGen(buffer, encoder, timestampProvider, nodeIdProvider)
-	val idList: List<Identifier> = runBlocking { (0 until count).map { generator.generate(waitTimeMs) } }
+	val idList: List<Identifier> = runBlocking { (0 until count).map { generator.generate(waitTimeMs.toLong()) } }
 	val end: Long = Instant.now().toEpochMilli()
 	val idSet: Set<Identifier> = idList.toSet()
 

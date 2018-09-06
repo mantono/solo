@@ -4,7 +4,7 @@ import com.mantono.solo.api.NodeIdProvider
 import com.mantono.solo.encoders.SnowFlakeIdEncoder
 import com.mantono.solo.generator.IdGen
 import com.mantono.solo.id.SnowFlakeId
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Disabled
@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit
 
 class IdentifierGenSnowFlakeIdTest
 {
+	@ExperimentalUnsignedTypes
 	@Disabled
 	@Test
 	fun uniquenessTestCrazyLongOne()
@@ -20,6 +21,7 @@ class IdentifierGenSnowFlakeIdTest
 		testGenerator(10_000_000, SnowFlakeIdEncoder, nodeIdProvider = FakeMacAddress)
 	}
 
+	@ExperimentalUnsignedTypes
 	@Test
 	fun testUniquenessOnIdsCreatedOnDifferentNodesAtTheSameTime()
 	{
@@ -46,32 +48,37 @@ class IdentifierGenSnowFlakeIdTest
 		}.toList()
 	}
 
+	@ExperimentalUnsignedTypes
 	@Test
 	fun uniquenessTestWithFakeMacAddressAnd64BitEncoder()
 	{
 		testGenerator(100_000, SnowFlakeIdEncoder, nodeIdProvider = FakeMacAddress)
 	}
 
+	@ExperimentalUnsignedTypes
 	@Test
 	fun uniquenessTestWithFakeInvertedMacAddressAnd64BitEncoder()
 	{
 		testGenerator(100_000, SnowFlakeIdEncoder, nodeIdProvider = FakeMacAddressInverted)
 	}
 
+	@ExperimentalUnsignedTypes
 	@Test
 	fun testBitEncoderForSnowFlakeId1()
 	{
-		val id = SnowFlakeIdEncoder.encode(MillisecondsSinceUnixEpoch.timestamp(), FakeMacAddress.nodeId(), 0L)
+		val id = SnowFlakeIdEncoder.encode(MillisecondsSinceUnixEpoch.timestamp(), FakeMacAddress.nodeId(), 0uL)
 		assertEquals(8, id.asBytes().size)
 	}
 
+	@ExperimentalUnsignedTypes
 	@Test
 	fun testBitEncoderForSnowFlakeId2()
 	{
-		val id = SnowFlakeIdEncoder.encode(SecondsSinceUnixEpoch.timestamp(), FakeMacAddressInverted.nodeId(), 999L)
+		val id = SnowFlakeIdEncoder.encode(SecondsSinceUnixEpoch.timestamp(), FakeMacAddressInverted.nodeId(), 999uL)
 		assertEquals(8, id.asBytes().size)
 	}
 
+	@ExperimentalUnsignedTypes
 	@Test
 	fun testAsLong()
 	{

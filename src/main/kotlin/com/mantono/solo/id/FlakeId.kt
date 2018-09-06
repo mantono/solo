@@ -4,6 +4,7 @@ import com.mantono.solo.api.Identifier
 import toBase64
 import java.util.*
 
+@ExperimentalUnsignedTypes
 class FlakeId(private val bytes: ByteArray): Identifier
 {
 	override fun asBytes(): ByteArray = bytes.copyOf()

@@ -3,9 +3,6 @@ package com.mantono.solo
 import com.mantono.solo.api.Identifier
 import java.math.BigInteger
 
-fun BigInteger.toBits(): List<Byte> = toBitsString("", 0)
-		.map { it.toString().toByte() }
-
 fun Long.toBitString(delimiter: String = "", delimiterInterval: Int = 0): String
 {
 	return BigInteger.valueOf(this).toBitsString(delimiter, delimiterInterval)
@@ -21,23 +18,13 @@ fun ByteArray.toBitString(delimiter: String = "", delimiterInterval: Int = 0): S
 	return BigInteger(this).toBitsString(delimiter, delimiterInterval)
 }
 
+@ExperimentalUnsignedTypes
 fun Identifier.toBitString(delimiter: String = "", delimiterInterval: Int = 0): String
 {
 	return BigInteger(this.asBytes()).toBitsString(delimiter, delimiterInterval)
 }
 
-
-fun BigInteger.toBitsString(delimiter: String = " ", delimiterInterval: Int = 8): String
-{
-	val negative: Boolean = signum() <= -1
-	val unsigned = if(negative) inv().plus(BigInteger.ONE) else this
-	return unsigned.toString(2)
-			.padZeroes()
-			.let { if(negative) invert(it) else it }
-			.withDelimiter(delimiter, delimiterInterval)
-}
-
-private fun String.padZeroes(): String
+internal fun String.padZeroes(): String
 {
 	val leftPad: Int = 8 - (length % 8)
 	return String(CharArray(leftPad) { '0' }) + this
@@ -67,3 +54,16 @@ private fun invert(bits: String): String = bits.asSequence()
 			}
 		}
 		.joinToString(separator = "") { "$it" }
+
+fun BigInteger.toBits(): List<Byte> = toBitsString("", 0)
+		.map { it.toString().toByte() }
+
+fun BigInteger.toBitsString(delimiter: String = " ", delimiterInterval: Int = 8): String
+{
+	val negative: Boolean = signum() <= -1
+	val unsigned = if(negative) inv().plus(BigInteger.ONE) else this
+	return unsigned.toString(2)
+			.padZeroes()
+			.let { if(negative) invert(it) else it }
+			.withDelimiter(delimiter, delimiterInterval)
+}

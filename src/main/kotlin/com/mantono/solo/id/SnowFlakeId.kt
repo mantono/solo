@@ -5,6 +5,7 @@ import toBase64
 import java.nio.ByteBuffer
 import java.util.*
 
+@ExperimentalUnsignedTypes
 class SnowFlakeId(private val bytes: ByteArray): Identifier
 {
 	override fun asBytes(): ByteArray = bytes.copyOf()

@@ -3,35 +3,37 @@ package com.mantono.solo
 import com.mantono.solo.api.SequenceCounter
 import com.mantono.solo.api.TimestampProvider
 
-class Counter(sequenceBits: Int): SequenceCounter
+@ExperimentalUnsignedTypes
+class Counter(sequenceBits: UInt): SequenceCounter
 {
 	init
 	{
-		if(sequenceBits <= 0)
+		if(sequenceBits == 0u)
 			throw IllegalArgumentException("Minimum required bits are 1, but got $sequenceBits")
 	}
 
-	override val max: Long = (0L until sequenceBits.toLong()).asSequence()
-			.map { 1L shl it.toInt() }
-			.sum()
+	override val max: ULong = (0uL until sequenceBits.toULong()).asSequence()
+			.map { 1uL shl it.toInt() }
+			.sumBy { it.toInt() }
+			.toULong()
 
-	private var lastTimestamp: Long = Long.MIN_VALUE
+	private var lastTimestamp: ULong = ULong.MIN_VALUE
 		set(value)
 		{
 			if(value > lastTimestamp)
 				field = value
 		}
 
-	private var counter: Long = 0
+	private var counter: ULong = 0u
 		set(value)
 		{
 			field = value.coerceAtMost(max + 1)
 		}
 
-	override fun next(timestamp: TimestampProvider): Pair<Long, Long>?
+	override fun next(timestamp: TimestampProvider): Pair<ULong, ULong>?
 	{
 		if(resetTime(timestamp.timestamp()))
-			counter = 0
+			counter = 0u
 		else
 			++counter
 
@@ -41,7 +43,7 @@ class Counter(sequenceBits: Int): SequenceCounter
 			null
 	}
 
-	private fun resetTime(timestamp: Long): Boolean
+	private fun resetTime(timestamp: ULong): Boolean
 	{
 		return if(timestamp > lastTimestamp)
 		{

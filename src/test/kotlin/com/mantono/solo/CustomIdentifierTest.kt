@@ -7,6 +7,7 @@ import java.util.*
 
 class CustomIdentifierTest
 {
+	@ExperimentalUnsignedTypes
 	@Test
 	fun testUniquesInEncoderWithLowSequenceEntropy()
 	{
@@ -14,9 +15,10 @@ class CustomIdentifierTest
 	}
 }
 
+@ExperimentalUnsignedTypes
 object EncoderWithShortSequence: BitEncoder<Identifier>(38, 24, 2)
 {
-	override fun encode(timestamp: Long, nodeId: ByteArray, sequence: Long): Identifier
+	override fun encode(timestamp: ULong, nodeId: ByteArray, sequence: ULong): Identifier
 	{
 		val bytes = this.generateByteArray(timestamp, nodeId, sequence)
 		return object: Identifier

@@ -4,7 +4,7 @@ import com.mantono.solo.api.Identifier
 import com.mantono.solo.api.identifierFrom
 import com.mantono.solo.encoders.FlakeIdEncoder
 import com.mantono.solo.generator.IdGen
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

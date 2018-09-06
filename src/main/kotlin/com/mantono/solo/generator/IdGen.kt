@@ -9,21 +9,22 @@ import com.mantono.solo.api.Identifier
 import com.mantono.solo.api.NodeIdProvider
 import com.mantono.solo.api.SequenceCounter
 import com.mantono.solo.api.TimestampProvider
-import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withTimeout
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import java.util.concurrent.TimeUnit
 
+@ExperimentalUnsignedTypes
 class IdGen<out T: Identifier>(
-		buffer: Int = 1000,
+		buffer: UInt = 1000u,
 		encoder: Encoder<T>,
 		timestamp: TimestampProvider = MillisecondsSinceUnixEpoch,
 		nodeId: NodeIdProvider = MacAddress,
 		counter: SequenceCounter = Counter(encoder.sequenceBits)
 ): IdGenerator<T>
 {
-	private val idChannel: Channel<T> = Channel(buffer)
+	private val idChannel: Channel<T> = Channel(buffer.toInt())
 
 	init
 	{
