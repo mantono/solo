@@ -4,7 +4,7 @@ import com.mantono.solo.api.NodeIdProvider
 import com.mantono.solo.encoders.SnowFlakeIdEncoder
 import com.mantono.solo.generator.IdGen
 import com.mantono.solo.id.SnowFlakeId
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Disabled

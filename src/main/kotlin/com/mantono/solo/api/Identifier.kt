@@ -1,6 +1,6 @@
 package com.mantono.solo.api
 
-import toBase64
+import com.mantono.pyttipanna.transformation.Base64
 
 interface Identifier
 {
@@ -30,7 +30,7 @@ interface Identifier
 	 *
 	 * @return a [String] representation of this Identifier
 	 */
-	fun asString(): String = asBytes().toBase64()
+	fun asString(): String = Base64.asString(asBytes())
 }
 
 private val base64Regex = Regex("^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})\$")

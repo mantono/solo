@@ -1,14 +1,14 @@
 package com.mantono.solo.id
 
+import com.mantono.pyttipanna.transformation.Base64
 import com.mantono.solo.api.Identifier
-import toBase64
 import java.nio.ByteBuffer
 import java.util.*
 
 class SnowFlakeId(private val bytes: ByteArray): Identifier
 {
 	override fun asBytes(): ByteArray = bytes.copyOf()
-	override fun asString(): String = bytes.toBase64()
+	override fun asString(): String = Base64.asString(bytes)
 	fun asLong(): Long = bytes.toLong()
 
 	override fun equals(other: Any?): Boolean

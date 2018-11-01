@@ -1,6 +1,7 @@
 package com.mantono.solo.api
 
-import kotlinx.coroutines.experimental.TimeoutCancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.TimeoutCancellationException
 import java.util.concurrent.TimeUnit
 
 interface IdGenerator<out T: Identifier>

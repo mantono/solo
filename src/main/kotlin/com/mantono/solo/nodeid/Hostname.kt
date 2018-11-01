@@ -1,7 +1,7 @@
 package com.mantono.solo.nodeid
 
-import com.mantono.pyttipanna.HashAlgorithm
-import com.mantono.pyttipanna.hash
+import com.mantono.pyttipanna.hashing.HashAlgorithm
+import com.mantono.pyttipanna.hashing.hash
 import com.mantono.solo.api.NodeIdProvider
 import java.io.File
 import java.nio.file.Files

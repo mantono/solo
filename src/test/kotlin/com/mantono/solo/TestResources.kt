@@ -1,14 +1,14 @@
 package com.mantono.solo
 
-import com.mantono.pyttipanna.HashAlgorithm
-import com.mantono.pyttipanna.hash
+import com.mantono.pyttipanna.hashing.HashAlgorithm
+import com.mantono.pyttipanna.hashing.hash
 import com.mantono.solo.api.Encoder
 import com.mantono.solo.api.IdGenerator
 import com.mantono.solo.api.Identifier
 import com.mantono.solo.api.NodeIdProvider
 import com.mantono.solo.api.TimestampProvider
 import com.mantono.solo.generator.IdGen
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import java.time.Instant
 import kotlin.experimental.inv

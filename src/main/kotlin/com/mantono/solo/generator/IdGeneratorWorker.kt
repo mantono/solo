@@ -4,7 +4,7 @@ import com.mantono.solo.api.Encoder
 import com.mantono.solo.api.Identifier
 import com.mantono.solo.api.SequenceCounter
 import com.mantono.solo.api.TimestampProvider
-import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.channels.SendChannel
 
 internal tailrec suspend fun <T: Identifier> idGenerator(
 		nodeId: ByteArray,
