@@ -1,11 +1,12 @@
 package com.mantono.solo.api
 
+@ExperimentalUnsignedTypes
 interface SequenceCounter
 {
 	/**
 	 * The maximum value this SequenceCounter can reach
 	 */
-	val max: Long
+	val max: ULong
 
 	/**
 	 * Returns a timestamp together with the next value in the sequence, or 0 if the sequence
@@ -19,5 +20,5 @@ interface SequenceCounter
 	 * @return a [Pair] containing a timestamp and a sequence number, or null
 	 * if no more sequence numbers can be produced for the given timestamp
 	 */
-	fun next(timestamp: TimestampProvider): Pair<Long, Long>?
+	fun next(timestamp: TimestampProvider): Pair<ULong, ULong>?
 }

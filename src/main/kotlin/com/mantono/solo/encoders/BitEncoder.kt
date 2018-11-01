@@ -4,10 +4,11 @@ import com.mantono.solo.api.Encoder
 import com.mantono.solo.api.Identifier
 import java.math.BigInteger
 
-abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, override val nodeIdBits: Int, override val sequenceBits: Int): Encoder<T>
+@ExperimentalUnsignedTypes
+abstract class BitEncoder<out T: Identifier>(override val timestampBits: UInt, override val nodeIdBits: UInt, override val sequenceBits: UInt): Encoder<T>
 {
-	val totalBits: Int by lazy { nodeIdBits + timestampBits + sequenceBits }
-	val totalBytes: Int = totalBits / 8
+	val totalBits: UInt by lazy { nodeIdBits + timestampBits + sequenceBits }
+	val totalBytes: UInt = totalBits / 8
 
 	init
 	{
@@ -21,7 +22,7 @@ abstract class BitEncoder<out T: Identifier>(override val timestampBits: Int, ov
 			throw IllegalStateException("Bad bit count: $totalBits != $bits")
 	}
 
-	fun generateByteArray(timestamp: Long, nodeId: ByteArray, sequence: Long): ByteArray
+	fun generateByteArray(timestamp: ULong, nodeId: ByteArray, sequence: ULong): ByteArray
 	{
 		val ts: BigInteger = timestamp.toBigInteger().reduceToLeastSignificantBits(timestampBits - 1).shl(nodeIdBits + sequenceBits)
 		val node: BigInteger = BigInteger(nodeId).reduceToLeastSignificantBits(nodeIdBits).shl(sequenceBits)

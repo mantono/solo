@@ -4,7 +4,7 @@ import com.mantono.solo.id.SnowFlakeId
 
 object SnowFlakeIdEncoder: BitEncoder<SnowFlakeId>(42, 12, 10)
 {
-	override fun encode(timestamp: Long, nodeId: ByteArray, sequence: Long): SnowFlakeId
+	override fun encode(timestamp: ULong, nodeId: ByteArray, sequence: ULong): SnowFlakeId
 	{
 		return SnowFlakeId(generateByteArray(timestamp, nodeId, sequence))
 	}

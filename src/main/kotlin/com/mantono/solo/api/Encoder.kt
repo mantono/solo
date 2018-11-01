@@ -1,9 +1,10 @@
 package com.mantono.solo.api
 
+@ExperimentalUnsignedTypes
 interface Encoder<out T: Identifier>
 {
-	val timestampBits: Int
-	val nodeIdBits: Int
-	val sequenceBits: Int
-	fun encode(timestamp: Long, nodeId: ByteArray, sequence: Long): T
+	val timestampBits: UInt
+	val nodeIdBits: UInt
+	val sequenceBits: UInt
+	fun encode(timestamp: ULong, nodeId: ByteArray, sequence: ULong): T
 }

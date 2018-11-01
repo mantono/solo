@@ -1,7 +1,8 @@
 package com.mantono.solo.api
 
-import toBase64
+import com.mantono.pyttipanna.transformation.Base64
 
+@ExperimentalUnsignedTypes
 interface Identifier
 {
 
@@ -13,7 +14,7 @@ interface Identifier
 	 *
 	 * @return the number of bits that this Identifier has.
 	 */
-	fun entropy(): Int = asBytes().size * 8
+	fun entropy(): UInt = (asBytes().size * 8).toUInt()
 
 	/**
 	 * @return a [ByteArray] which is the unique data representing this Identifier.
@@ -30,7 +31,7 @@ interface Identifier
 	 *
 	 * @return a [String] representation of this Identifier
 	 */
-	fun asString(): String = asBytes().toBase64()
+	fun asString(): String = Base64(asBytes())
 }
 
 private val base64Regex = Regex("^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})\$")
@@ -39,12 +40,13 @@ private val base64Regex = Regex("^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-
  * Allows for an [Identifier] that has been serialized in the form of an encoded base64 String to
  * be decoded and converted back to an [Identifier].
  */
+@ExperimentalUnsignedTypes
 fun identifierFrom(base64Input: String): Identifier
 {
-	if(!base64Input.matches(base64Regex))
+	if(!Base64.isValid(base64Input))
 		throw IllegalArgumentException("Input $base64Input is not a valid base64 encoded data")
 
-	val bytes: ByteArray = java.util.Base64.getDecoder().decode(base64Input)
+	val bytes: ByteArray = Base64.asBytes(base64Input)
 	return object: Identifier
 	{
 		override fun asBytes(): ByteArray = bytes

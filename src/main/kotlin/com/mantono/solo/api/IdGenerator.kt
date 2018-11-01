@@ -1,8 +1,9 @@
 package com.mantono.solo.api
 
-import kotlinx.coroutines.experimental.TimeoutCancellationException
+import kotlinx.coroutines.TimeoutCancellationException
 import java.util.concurrent.TimeUnit
 
+@ExperimentalUnsignedTypes
 interface IdGenerator<out T: Identifier>
 {
 	/**
@@ -15,5 +16,5 @@ interface IdGenerator<out T: Identifier>
 	 *
 	 * @return an [Identifier] of type [T]
 	 */
-	suspend fun generate(maxWaitTime: Long = 1_000, unit: TimeUnit = TimeUnit.MILLISECONDS): T
+	suspend fun generate(maxWaitTime: ULong = 1_000u, unit: TimeUnit = TimeUnit.MILLISECONDS): T
 }
