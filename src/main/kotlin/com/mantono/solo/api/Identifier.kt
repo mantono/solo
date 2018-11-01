@@ -2,10 +2,9 @@ package com.mantono.solo.api
 
 import com.mantono.pyttipanna.transformation.Base64
 
-interface Identifier
-{
+interface Identifier {
 
-	/**
+    /**
 	 * By default this returns the
 	 * number of bytes in the ByteArray (@see [asBytes]) times 8. This function should
 	 * be overridden if an implementation
@@ -13,14 +12,14 @@ interface Identifier
 	 *
 	 * @return the number of bits that this Identifier has.
 	 */
-	fun entropy(): Int = asBytes().size * 8
+    fun entropy(): Int = asBytes().size * 8
 
-	/**
+    /**
 	 * @return a [ByteArray] which is the unique data representing this Identifier.
 	 */
-	fun asBytes(): ByteArray
+    fun asBytes(): ByteArray
 
-	/**
+    /**
 	 * Gives a [String] representation of this Identifier in such way that it is unique for all
 	 * instances with a given ByteArray. This representation is by default encoded as [java.util.Base64],
 	 * but it is up to each implementation to decide what fits best.
@@ -30,23 +29,22 @@ interface Identifier
 	 *
 	 * @return a [String] representation of this Identifier
 	 */
-	fun asString(): String = Base64.asString(asBytes())
+    fun asString(): String = Base64.asString(asBytes())
 }
 
-private val base64Regex = Regex("^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})\$")
+private val base64Regex =
+    Regex("^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})\$")
 
 /**
  * Allows for an [Identifier] that has been serialized in the form of an encoded base64 String to
  * be decoded and converted back to an [Identifier].
  */
-fun identifierFrom(base64Input: String): Identifier
-{
-	if(!base64Input.matches(base64Regex))
-		throw IllegalArgumentException("Input $base64Input is not a valid base64 encoded data")
+fun identifierFrom(base64Input: String): Identifier {
+    if (!base64Input.matches(base64Regex))
+        throw IllegalArgumentException("Input $base64Input is not a valid base64 encoded data")
 
-	val bytes: ByteArray = java.util.Base64.getDecoder().decode(base64Input)
-	return object: Identifier
-	{
-		override fun asBytes(): ByteArray = bytes
-	}
+    val bytes: ByteArray = java.util.Base64.getDecoder().decode(base64Input)
+    return object : Identifier {
+        override fun asBytes(): ByteArray = bytes
+    }
 }

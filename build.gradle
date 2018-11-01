@@ -26,8 +26,9 @@ apply plugin: 'idea'
 apply from: 'jacoco.gradle'
 apply plugin: "org.junit.platform.gradle.plugin"
 
+
 group = 'com.mantono'
-version = '1.1.1'
+version = '1.2.0'
 description = 'Non-synchronized unique ID generator'
 
 defaultTasks 'test'

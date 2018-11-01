@@ -10,7 +10,6 @@ import com.mantono.solo.api.NodeIdProvider
 import com.mantono.solo.api.SequenceCounter
 import com.mantono.solo.api.TimestampProvider
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -18,28 +17,29 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import java.util.concurrent.TimeUnit
 
-class IdGen<out T: Identifier>(
-		buffer: Int = 1000,
-		encoder: Encoder<T>,
-		timestamp: TimestampProvider = MillisecondsSinceUnixEpoch,
-		nodeId: NodeIdProvider = MacAddress,
-		counter: SequenceCounter = Counter(encoder.sequenceBits),
-		scope: CoroutineScope = GlobalScope
-): IdGenerator<T>
-{
-	private val idChannel: Channel<T> = Channel(buffer)
+class IdGen<out T : Identifier>(
+    buffer: Int = 1000,
+    encoder: Encoder<T>,
+    timestamp: TimestampProvider = MillisecondsSinceUnixEpoch,
+    nodeId: NodeIdProvider = MacAddress,
+    counter: SequenceCounter = Counter(encoder.sequenceBits),
+    scope: CoroutineScope = GlobalScope
+) : IdGenerator<T> {
+    private val idChannel: Channel<T> = Channel(buffer)
 
-	init
-	{
-		scope.launch { idGenerator(nodeId.nodeId(), idChannel, encoder, counter, timestamp) }
-	}
+    init {
+        scope.launch { idGenerator(nodeId.nodeId(), idChannel, encoder, counter, timestamp) }
+    }
 
-	override suspend fun generate(maxWaitTime: Long, unit: TimeUnit): T = idChannel.receive(maxWaitTime, unit)
+    override suspend fun generate(maxWaitTime: Long, unit: TimeUnit): T =
+        idChannel.receive(maxWaitTime, unit)
 }
 
-private suspend fun <E> ReceiveChannel<E>.receive(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS): E
-{
-	val rc = this
-	val milliseconds: Long = unit.toMillis(time)
-	return withTimeout(milliseconds) { rc.receive() }
+private suspend fun <E> ReceiveChannel<E>.receive(
+    time: Long,
+    unit: TimeUnit = TimeUnit.MILLISECONDS
+): E {
+    val rc = this
+    val milliseconds: Long = unit.toMillis(time)
+    return withTimeout(milliseconds) { rc.receive() }
 }

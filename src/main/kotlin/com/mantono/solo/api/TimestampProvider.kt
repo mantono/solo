@@ -1,6 +1,5 @@
 package com.mantono.solo.api
 
-interface TimestampProvider
-{
-	fun timestamp(): Long
+interface TimestampProvider {
+    fun timestamp(): Long
 }

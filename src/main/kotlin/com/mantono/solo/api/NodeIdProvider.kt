@@ -7,9 +7,8 @@ package com.mantono.solo.api
  * What kind of identification that is suitable depends on the context and
  * the environment of the application using the generated [Identifier].
  */
-interface NodeIdProvider
-{
-	/**
+interface NodeIdProvider {
+    /**
 	 * An ID that uniquely identifies this generator. This can but must not
 	 * necessarily be unique for a physical node. The important thing is
 	 * that each generator has an unique id, regardless of from what it is
@@ -17,5 +16,5 @@ interface NodeIdProvider
 	 *
 	 * @return a ByteArray that uniquely identifies this node
 	 */
-	fun nodeId(): ByteArray
+    fun nodeId(): ByteArray
 }

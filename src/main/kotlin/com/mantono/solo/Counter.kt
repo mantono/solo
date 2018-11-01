@@ -3,52 +3,45 @@ package com.mantono.solo
 import com.mantono.solo.api.SequenceCounter
 import com.mantono.solo.api.TimestampProvider
 
-class Counter(sequenceBits: Int): SequenceCounter
-{
-	init
-	{
-		if(sequenceBits <= 0)
-			throw IllegalArgumentException("Minimum required bits are 1, but got $sequenceBits")
-	}
+class Counter(sequenceBits: Int) : SequenceCounter {
 
-	override val max: Long = (0L until sequenceBits.toLong()).asSequence()
-			.map { 1L shl it.toInt() }
-			.sum()
+    init {
+        if (sequenceBits <= 0)
+            throw IllegalArgumentException("Minimum required bits are 1, but got $sequenceBits")
+    }
 
-	private var lastTimestamp: Long = Long.MIN_VALUE
-		set(value)
-		{
-			if(value > lastTimestamp)
-				field = value
-		}
+    override val max: Long = (0L until sequenceBits.toLong()).asSequence()
+            .map { 1L shl it.toInt() }
+            .sum()
 
-	private var counter: Long = 0
-		set(value)
-		{
-			field = value.coerceAtMost(max + 1)
-		}
+    private var lastTimestamp: Long = Long.MIN_VALUE
+        set(value) {
+            if (value > lastTimestamp)
+                field = value
+        }
 
-	override fun next(timestamp: TimestampProvider): Pair<Long, Long>?
-	{
-		if(resetTime(timestamp.timestamp()))
-			counter = 0
-		else
-			++counter
+    private var counter: Long = 0
+        set(value) {
+            field = value.coerceAtMost(max + 1)
+        }
 
-		return if(counter <= max)
-			lastTimestamp to counter
-		else
-			null
-	}
+    override fun next(timestamp: TimestampProvider): Pair<Long, Long>? {
+        if (resetTime(timestamp.timestamp()))
+            counter = 0
+        else
+            ++counter
 
-	private fun resetTime(timestamp: Long): Boolean
-	{
-		return if(timestamp > lastTimestamp)
-		{
-			this.lastTimestamp = timestamp
-			true
-		}
-		else
-			false
-	}
+        return if (counter <= max)
+            lastTimestamp to counter
+        else
+            null
+    }
+
+    private fun resetTime(timestamp: Long): Boolean {
+        return if (timestamp > lastTimestamp) {
+            this.lastTimestamp = timestamp
+            true
+        } else
+            false
+    }
 }
