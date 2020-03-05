@@ -17,7 +17,7 @@ repositories {
     maven(url = "https://jitpack.io")
 }
 
-val jvmVersion = "9"
+val jvmVersion = "11"
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.70")
@@ -29,7 +29,7 @@ dependencies {
     implementation("com.github.mantono:pyttipanna:1.0.0")
 
     // Junit
-    val junit = "5.5.1"
+    val junit = "5.6.0"
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit")
 }
@@ -56,7 +56,7 @@ publishing {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "9"
+    kotlinOptions.jvmTarget = "11"
 }
 
 tasks {
